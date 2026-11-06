@@ -1,0 +1,1603 @@
+<!doctype html><html><head><meta charset=utf8>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-hDkjc0j/g+AQEBL6UnVo4XhpvapfdlvP5bgAAgJ1qmE=' 'sha256-QJTdeXzr2jn/6vZNvMokKea3viaEaHRLONk84CSuTnQ=' https://accounts.google.com/gsi/client https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://accounts.google.com/gsi/style https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://gmail.googleapis.com https://accounts.google.com/gsi/ https://cdnjs.cloudflare.com https://*.cloudfunctions.net https://*.run.app; frame-src blob: https://accounts.google.com/gsi/; object-src blob:; worker-src 'self' blob: https://cdnjs.cloudflare.com; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e6edf0">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Agenda">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+<title>Agenda Scolastica</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: modale centrale arrotondato. Intestazione (promemoria + scadenze) in alto,
+   sotto calendario mensile a sinistra e sidebar (legenda + azioni) a destra. */
+:root {
+  /* Superfici e testo */
+  --page-bg: #e6edf0;
+  --modal-bg: #ffffff;
+  --surface-2: #f3f7f9;
+  --ink: #14202b;
+  --ink-soft: #5a6b77;
+  --border: #c7d4db;
+  --border-strong: #14202b;
+  --accent: #1f7a4d;
+  --focus: #1b6fd1;
+
+  /* Categorie calendario (modificare qui per cambiare i colori) */
+  --c-normal: #e0f7fa;
+  --c-normal-ink: #14202b;
+  --c-weekend: #b3f2c0;
+  --c-weekend-ink: #14202b;
+  --c-impegno: #e03131;
+  --c-impegno-ink: #ffffff;
+  --c-today: #ffffff;
+  --c-today-ring: #14202b;
+  --c-done: #1f9d55;
+
+  /* Pill intestazione */
+  --pill-bg: #ffffff;
+  --pill-border: #14202b;
+  --pill-ink: #14202b;
+  --pill-empty-ink: #8798a4;
+
+  /* Pulsante "Aggiungi impegno" (pattern texturizzato) */
+  --add-fill: #c9f5d2;
+  --add-line: #2f9e57;
+  --add-border: #2f9e57;
+  --add-label: #1f7a4d;
+  --plus-ink: #0b0f12;
+  --add-pattern: repeating-linear-gradient(135deg, var(--add-line) 0 2px, transparent 2px 8px), linear-gradient(var(--add-fill), var(--add-fill));
+
+  /* Pop-up promemoria */
+  --pop-bg: #14202b;
+  --pop-ink: #ffffff;
+  --pop-btn: #ffffff;
+  --pop-btn-ink: #14202b;
+
+  --shadow: 0 30px 80px rgba(20, 32, 43, .18), 0 4px 14px rgba(20, 32, 43, .08);
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page-bg: #0b1116; --modal-bg: #121b22; --surface-2: #19252d; --ink: #e8f0f3; --ink-soft: #9db0bb;
+    --border: #2a3b46; --border-strong: #e8f0f3; --accent: #6fd19a; --focus: #6aa9ff;
+    --c-normal: #12303a; --c-normal-ink: #e8f0f3; --c-weekend: #173d24; --c-weekend-ink: #e8f0f3;
+    --c-impegno: #d63a3a; --c-impegno-ink: #ffffff; --c-today: #f4f8fa; --c-today-ring: #e8f0f3; --c-done: #52c98a;
+    --pill-bg: #19252d; --pill-border: #4a5f6c; --pill-ink: #e8f0f3; --pill-empty-ink: #6f8493;
+    --add-fill: #2f7a47; --add-line: #6fd19a; --add-border: #6fd19a; --add-label: #6fd19a; --plus-ink: #0b0f12;
+    --pop-bg: #e8f0f3; --pop-ink: #14202b; --pop-btn: #14202b; --pop-btn-ink: #ffffff;
+    --shadow: 0 30px 80px rgba(0, 0, 0, .55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page-bg: #0b1116; --modal-bg: #121b22; --surface-2: #19252d; --ink: #e8f0f3; --ink-soft: #9db0bb;
+  --border: #2a3b46; --border-strong: #e8f0f3; --accent: #6fd19a; --focus: #6aa9ff;
+  --c-normal: #12303a; --c-normal-ink: #e8f0f3; --c-weekend: #173d24; --c-weekend-ink: #e8f0f3;
+  --c-impegno: #d63a3a; --c-impegno-ink: #ffffff; --c-today: #f4f8fa; --c-today-ring: #e8f0f3; --c-done: #52c98a;
+  --pill-bg: #19252d; --pill-border: #4a5f6c; --pill-ink: #e8f0f3; --pill-empty-ink: #6f8493;
+  --add-fill: #2f7a47; --add-line: #6fd19a; --add-border: #6fd19a; --add-label: #6fd19a; --plus-ink: #0b0f12;
+  --pop-bg: #e8f0f3; --pop-ink: #14202b; --pop-btn: #14202b; --pop-btn-ink: #ffffff;
+  --shadow: 0 30px 80px rgba(0, 0, 0, .55);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--page-bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.4;
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding-block: 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.ico { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---------- Modale ---------- */
+.modal {
+  position: relative; width: min(1180px, 100%); background: var(--modal-bg); border: 2px solid var(--border-strong);
+  border-radius: 30px; padding: 30px clamp(16px, 3vw, 40px) clamp(18px, 3vw, 34px); box-shadow: var(--shadow);
+}
+.close {
+  position: absolute; top: 14px; right: 16px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent;
+  display: grid; place-items: center; font-size: 26px;
+}
+.close:hover { background: var(--surface-2); }
+.reopen { display: flex; align-items: center; gap: 8px; padding: 14px 22px; border-radius: 999px; border: 2px solid var(--border-strong); background: var(--modal-bg); font-weight: 600; }
+
+/* ---------- Intestazione ---------- */
+.head { display: grid; gap: 14px; padding-right: 44px; margin-bottom: 22px; }
+.row { display: grid; grid-template-columns: 220px 1fr; align-items: center; gap: 16px; }
+.label { font-family: var(--font-display); font-weight: 800; font-size: 17px; letter-spacing: .08em; text-transform: uppercase; }
+.pills { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.pill {
+  min-width: 0; height: 40px; padding: 0 16px; border-radius: 999px; background: var(--pill-bg); color: var(--pill-ink);
+  border: 1.5px solid var(--pill-border); font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;
+  transition: transform .15s, box-shadow .15s;
+}
+.pill:hover:not(.empty) { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(20, 32, 43, .14); }
+.pill.empty { color: var(--pill-empty-ink); cursor: default; border-style: dashed; }
+
+/* ---------- Corpo ---------- */
+.body { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 28px; align-items: start; }
+.cal-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.cal-bar h2 { margin: 0; font-family: var(--font-display); font-size: 20px; font-weight: 700; text-transform: capitalize; margin-right: auto; }
+.nav { height: 34px; min-width: 34px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--modal-bg); display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600; font-size: 13px; }
+.nav:hover { background: var(--surface-2); }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.dow { font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: .1em; color: var(--ink-soft); text-align: center; padding: 4px 0; }
+.dow.we { color: var(--accent); }
+.cell {
+  position: relative; min-height: 96px; border: 1.5px solid transparent; border-radius: 12px; padding: 8px 8px 6px; text-align: left;
+  display: flex; flex-direction: column; gap: 4px; min-width: 0; background: var(--c-normal); color: var(--c-normal-ink);
+  transition: transform .12s, box-shadow .12s;
+}
+.cell:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(20, 32, 43, .16); }
+.cell.weekend { background: var(--c-weekend); color: var(--c-weekend-ink); }
+.cell.impegno { background: var(--c-impegno); color: var(--c-impegno-ink); }
+.cell.today { background: var(--c-today); color: var(--c-normal-ink); border: 2.5px solid var(--c-today-ring); }
+.cell.today.impegno { background: var(--c-impegno); color: var(--c-impegno-ink); }
+.cell.out { opacity: .42; }
+.num { font-family: var(--font-display); font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.tag-today { font-family: var(--font-body); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: var(--c-today-ring); color: var(--c-today); padding: 1px 6px; border-radius: 999px; }
+.items { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.it { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; line-height: 1.2; min-width: 0; }
+.it span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.it .ico { font-size: 13px; }
+.it.ok .ico { color: var(--c-done); }
+.cell.impegno .it.ok .ico { color: var(--c-impegno-ink); }
+.more { font-size: 11px; font-weight: 700; opacity: .8; }
+.dots { display: none; gap: 3px; align-items: center; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .7; }
+
+/* ---------- Sidebar ---------- */
+.side { display: flex; flex-direction: column; gap: 26px; padding-top: 28px; }
+.legend { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 15px; }
+.sw { width: 26px; height: 26px; border-radius: 50%; border: 2px solid; flex: none; }
+.sw.w { background: var(--c-weekend); border-color: var(--c-done); }
+.sw.i { background: var(--c-impegno); border-color: var(--c-impegno); }
+.sw.n { background: var(--c-normal); border-color: #1c78d4; }
+.actions { display: grid; gap: 18px; justify-items: start; }
+.tile { display: grid; gap: 8px; justify-items: center; width: 112px; border: 0; background: transparent; padding: 0; text-align: center; }
+.tile-box { width: 100%; aspect-ratio: 1; border-radius: 22px; display: grid; place-items: center; transition: transform .15s, box-shadow .15s; }
+.tile:hover .tile-box { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(20, 32, 43, .18); }
+.tile-add .tile-box { background: var(--add-pattern); border: 2.5px solid var(--add-border); color: var(--plus-ink); font-size: 56px; }
+.tile-add .ico { stroke-width: 2.6; }
+.tile-add .tile-name { color: var(--add-label); }
+.tile-doc .tile-box { background: var(--surface-2); border: 2.5px solid var(--border-strong); color: var(--ink); font-size: 44px; }
+.tile-name { font-weight: 700; font-size: 14px; line-height: 1.2; }
+.sync { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--modal-bg); font-weight: 600; font-size: 13px; }
+.sync:hover { background: var(--surface-2); }
+.sync .ico { font-size: 17px; }
+.sync small { display: block; font-weight: 500; font-size: 11px; color: var(--ink-soft); }
+
+/* ---------- Pop-up promemoria ---------- */
+.popup {
+  position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 20; width: min(560px, calc(100% - 32px));
+  background: var(--pop-bg); color: var(--pop-ink); border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .3); animation: drop .35s ease-out;
+}
+.popup .bell { font-size: 24px; flex: none; }
+.popup p { margin: 0; flex: 1 1 220px; font-size: 15px; }
+.popup p b { font-family: var(--font-display); letter-spacing: .05em; }
+.popup .btns { display: flex; gap: 8px; margin-left: auto; }
+.pb { border-radius: 999px; padding: 8px 16px; font-weight: 700; font-size: 14px; border: 1.5px solid var(--pop-ink); background: transparent; color: var(--pop-ink); }
+.pb.main { background: var(--pop-btn); color: var(--pop-btn-ink); border-color: var(--pop-btn); }
+@keyframes drop { from { opacity: 0; transform: translate(-50%, -14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* ---------- Fogli (dialoghi) ---------- */
+.overlay { position: fixed; inset: 0; z-index: 50; background: rgba(8, 14, 19, .55); display: grid; place-items: center; padding: 16px; }
+.sheet { width: min(560px, 100%); max-height: calc(100% - 16px); overflow: auto; background: var(--modal-bg); color: var(--ink); border: 2px solid var(--border-strong); border-radius: 24px; padding: 24px; display: grid; gap: 16px; }
+.sheet h3 { margin: 0; font-family: var(--font-display); font-size: 22px; font-weight: 800; }
+.sheet p { margin: 0; color: var(--ink-soft); }
+.sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.x2 { width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--surface-2); display: grid; place-items: center; flex: none; font-size: 18px; }
+form { display: grid; gap: 12px; }
+.f { display: grid; gap: 5px; font-weight: 600; font-size: 13px; }
+.f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+input[type="text"], input[type="date"], input[type="time"], select {
+  font: inherit; font-weight: 500; color: var(--ink); background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 12px; width: 100%; min-width: 0;
+}
+.btn { border-radius: 999px; padding: 10px 18px; font-weight: 700; border: 1.5px solid var(--border-strong); background: var(--modal-bg); display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
+.btn.primary { background: var(--ink); color: var(--modal-bg); }
+.btn.danger { border-color: var(--c-impegno); color: var(--c-impegno); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.actions-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.drop { display: grid; gap: 8px; justify-items: center; text-align: center; padding: 28px 16px; border: 2px dashed var(--border-strong); border-radius: 18px; background: var(--surface-2); cursor: pointer; font-weight: 600; }
+.drop.over { background: var(--c-normal); }
+.drop .ico { font-size: 34px; }
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.preview { width: 100%; height: 300px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface-2); }
+.meta { display: flex; align-items: center; gap: 10px; font-weight: 600; min-width: 0; }
+.meta span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.mail { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--surface-2); }
+.mail input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--c-impegno); flex: none; }
+.mail b { display: block; font-size: 14px; }
+.mail small { color: var(--ink-soft); }
+.found { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-weight: 700; font-size: 13px; color: var(--c-impegno); }
+.bar { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; border: 1px solid var(--border); }
+.bar i { display: block; height: 100%; width: 0; background: var(--c-impegno); transition: width .2s linear; }
+.chip { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--surface-2); border: 1px solid var(--border); }
+.note { font-size: 12px; color: var(--ink-soft); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 80; background: var(--ink); color: var(--modal-bg); padding: 10px 18px; border-radius: 999px; font-weight: 600; max-width: calc(100% - 32px); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .body { grid-template-columns: minmax(0, 1fr); }
+  .side { padding-top: 0; flex-direction: row; flex-wrap: wrap; gap: 20px 32px; align-items: flex-start; }
+  .actions { grid-auto-flow: column; justify-content: start; gap: 16px; }
+  .tile { width: 100px; }
+}
+@media (max-width: 720px) {
+  .row { grid-template-columns: 1fr; gap: 8px; }
+  .pills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .head { padding-right: 36px; }
+}
+@media (max-width: 640px) {
+  .modal { padding-top: 24px; border-radius: 24px; }
+  .cal { gap: 4px; }
+  .cell { min-height: 58px; padding: 6px 5px; border-radius: 9px; gap: 3px; }
+  .num { font-size: 14px; }
+  .tag-today { display: none; }
+  .items { display: none; }
+  .dots { display: flex; }
+  .f2 { grid-template-columns: 1fr; }
+  .actions { grid-auto-flow: row; }
+  .tile { width: 96px; }
+  .popup { top: 8px; }
+}
+.warn { font-size: 13px; color: var(--c-impegno); font-weight: 600; }
+.sheet .f2 { align-items: end; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 6px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface-2); }
+.avail { display: grid; gap: 4px; margin-top: 8px; }
+.avail .tags { border: 0; background: transparent; padding: 0; max-height: 120px; overflow: auto; }
+.tag { display: inline-flex; gap: 4px; align-items: center; padding: 3px 10px; border-radius: 999px; background: var(--ink); color: var(--modal-bg); font-weight: 700; font-size: 13px; border: 1.5px solid var(--ink); }
+.tag button { background: transparent; border: 0; color: inherit; padding: 0 0 0 2px; font-size: 16px; line-height: 1; }
+button.tag { cursor: pointer; background: var(--modal-bg); color: var(--ink); }
+button.tag.on { background: var(--ink); color: var(--modal-bg); }
+.tag-in { flex: 1; min-width: 120px; border: 0 !important; background: transparent !important; padding: 6px !important; }
+.tag-in.bad { color: var(--c-impegno); }
+.chk { display: flex; gap: 10px; align-items: center; font-weight: 600; font-size: 14px; }
+.chk input { width: 18px; height: 18px; accent-color: var(--c-impegno); flex: none; }
+textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 12px; width: 100%; min-height: 90px; resize: vertical; }
+.secbox { border: 1.5px solid var(--border); border-radius: 14px; padding: 10px 14px; background: var(--surface-2); }
+.secbox summary { cursor: pointer; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.sec { list-style: none; margin: 10px 0 8px; padding: 0; display: grid; gap: 6px; }
+.sec li { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; font-weight: 600; color: var(--ink); }
+.sec li .ico { font-size: 16px; margin-top: 1px; }
+.sec li.ok .ico { color: var(--c-done); }
+.sec li.ko .ico { color: var(--c-impegno); }
+.sec li.na .ico { color: var(--ink-soft); }
+
+/* ---------- Sfondo dinamico (solo CSS, animazioni di sola trasformazione: leggere per CPU e batteria) ---------- */
+:root { --bg-a: #a9efd2; --bg-b: #b7d3ff; --bg-c: #e2caff; --bg-o: .8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg-a: #0e5a47; --bg-b: #0c3e6e; --bg-c: #1f6b52; --bg-o: .6; } }
+:root[data-theme="dark"] { --bg-a: #0e5a47; --bg-b: #0c3e6e; --bg-c: #1f6b52; --bg-o: .6; }
+.bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--page-bg); contain: strict; }
+.bg i { position: absolute; width: 70vmax; height: 70vmax; border-radius: 50%; opacity: var(--bg-o); will-change: transform; backface-visibility: hidden;
+  background: radial-gradient(circle closest-side, var(--bg-a), transparent); }
+.bg i:nth-child(1) { top: -25vmax; left: -20vmax; animation: bgA 38s ease-in-out infinite alternate; }
+.bg i:nth-child(2) { top: 10vmax; right: -30vmax; background: radial-gradient(circle closest-side, var(--bg-b), transparent); animation: bgB 46s ease-in-out infinite alternate; }
+.bg i:nth-child(3) { bottom: -35vmax; left: 5vmax; background: radial-gradient(circle closest-side, var(--bg-c), transparent); animation: bgC 54s ease-in-out infinite alternate; }
+@keyframes bgA { to { transform: translate3d(35vmax, 22vmax, 0) scale(1.15); } }
+@keyframes bgB { to { transform: translate3d(-38vmax, 18vmax, 0) scale(.9); } }
+@keyframes bgC { to { transform: translate3d(30vmax, -26vmax, 0) scale(1.2); } }
+.bg-pause .bg i { animation-play-state: paused; }
+.cell.today .tag-today { background: #14202b; color: #ffffff; }
+.cell.today { color: var(--c-today-ink, var(--c-normal-ink)); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --c-today-ink: #14202b; } }
+:root[data-theme="dark"] { --c-today-ink: #14202b; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 3 3 5-6"/></symbol>
+  <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+  <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4L4 9M4 4v5h5M4 13a8 8 0 0 0 14 4l2-2M20 20v-5h-5"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+</svg>
+
+<button class="reopen" id="reopen" hidden><svg class="ico"><use href="#i-cal"/></svg> Apri l'agenda</button>
+
+<main class="modal" id="modal" aria-label="Agenda scolastica">
+  <button class="close" id="close" aria-label="Chiudi agenda"><svg class="ico"><use href="#i-x"/></svg></button>
+
+  <div class="popup" id="popup" role="alert" hidden>
+    <svg class="ico bell"><use href="#i-bell"/></svg>
+    <p><b>PROMEMORIA IMMINENTE:</b> <span id="pop-text"></span></p>
+    <div class="btns">
+      <button class="pb" id="pop-snooze">Posticipa</button>
+      <button class="pb main" id="pop-view">Visualizza</button>
+    </div>
+  </div>
+
+  <section class="head" aria-label="Promemoria e scadenze">
+    <div class="row"><div class="label">Promemoria:</div><div class="pills" id="pills-rem"></div></div>
+    <div class="row"><div class="label">Scadenze imminenti:</div><div class="pills" id="pills-due"></div></div>
+  </section>
+
+  <div class="body">
+    <section aria-label="Calendario mensile">
+      <div class="cal-bar">
+        <h2 id="month-title"></h2>
+        <button class="nav" id="today-btn">Oggi</button>
+        <button class="nav" id="prev" aria-label="Mese precedente"><svg class="ico"><use href="#i-left"/></svg></button>
+        <button class="nav" id="next" aria-label="Mese successivo"><svg class="ico"><use href="#i-right"/></svg></button>
+      </div>
+      <div class="cal" id="cal"></div>
+    </section>
+
+    <aside class="side" aria-label="Legenda e azioni">
+      <ul class="legend">
+        <li><span class="sw w"></span>weekend</li>
+        <li><span class="sw i"></span>impegno</li>
+        <li><span class="sw n"></span>giorni normali</li>
+      </ul>
+      <div class="actions">
+        <button class="tile tile-add" id="btn-add"><span class="tile-box"><svg class="ico"><use href="#i-plus"/></svg></span><span class="tile-name">Aggiungi impegno</span></button>
+        <button class="tile tile-doc" id="btn-pdf"><span class="tile-box"><svg class="ico"><use href="#i-doc"/></svg></span><span class="tile-name">Carica Circolare (PDF)</span></button>
+        <button class="sync" id="btn-gmail"><svg class="ico"><use href="#i-mail"/></svg><span>Sync Gmail<small id="sync-status">Mai sincronizzato</small></span></button>
+        <button class="sync" id="btn-settings"><svg class="ico"><use href="#i-gear"/></svg><span>Impostazioni<small>Classi, Gmail, cloud</small></span></button>
+        <button class="sync" id="btn-theme"><svg class="ico"><use href="#i-moon"/></svg><span>Tema<small id="theme-label">Passa al tema scuro</small></span></button>
+        <button class="sync" id="btn-install" hidden><svg class="ico"><use href="#i-download"/></svg><span>Installa app<small>Aggiungi alla schermata Home</small></span></button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div class="overlay" id="overlay" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+/* Parser locale (nessun server): circolari PDF di qualsiasi layout (classe, data, ora, descrizione) + email.
+   Funziona sugli item di testo di pdf.js: {s: testo, x, y} con y crescente verso il basso. */
+(function (root) {
+  var MESI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  var iso = function (d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+  function num(a, b) { return a - b; }
+
+  /* ---------- Circolari PDF: estrazione generica di classe, data, ora e descrizione ----------
+     Non dipende dal layout: tabelle (anche con data in una cella unita), elenchi per giorno, paragrafi. */
+
+  // "5C-D" -> ["5C","5D"]; "5A5C-D5G5J" -> ["5A","5C","5D","5G","5J"]; "3D-3K" -> ["3D","3K"]
+  function expand(s) {
+    var out = [], re = /([1-5])([A-Z])(?:[-–]([1-5])?([A-Z]))?/g, m;
+    s = String(s).toUpperCase().replace(/\s+/g, '');
+    while ((m = re.exec(s))) {
+      out.push(m[1] + m[2]);
+      if (m[4]) out.push((m[3] || m[1]) + m[4]);
+    }
+    return out;
+  }
+  var CLS_TOKEN = /^(?:[1-5][A-Z](?:[-–][1-5]?[A-Z])?)+$/;
+  function lineClasses(text) {
+    var t = String(text).replace(/([1-5][A-Z])\s*[-–]\s*(?=[1-5]?[A-Z](?![\p{L}\d]))/gu, '$1-');
+    var out = [];
+    t.split(/[\s,;()\/]+/).forEach(function (tok) {
+      tok = tok.replace(/^[^\p{L}\d]+|[^\p{L}\d]+$/gu, '');
+      if (CLS_TOKEN.test(tok)) expand(tok).forEach(function (k) { if (out.indexOf(k) < 0) out.push(k); });
+    });
+    return out;
+  }
+
+  // date con la loro posizione nel testo (già normalizzato): [{i, e, d, mo, y}] (y = 0 se manca l'anno)
+  function scanDates(low) {
+    var res = [], m, re, mo;
+    var free = function (i, e) { return !res.some(function (r) { return i < r.e && e > r.i; }); };
+    var add = function (m, d, mo, y) { if (d >= 1 && d <= 31 && mo >= 1 && mo <= 12 && free(m.index, m.index + m[0].length)) res.push({ i: m.index, e: m.index + m[0].length, d: d, mo: mo, y: y }); };
+    var monIdx = function (s) { var k = MESI.indexOf(s); return k < 0 ? MESI_ABBR.indexOf(s) : k; };
+    re = /\b(\d{4})-(\d{1,2})-(\d{1,2})\b/g;
+    while ((m = re.exec(low))) add(m, +m[3], +m[2], +m[1]);
+    re = /\b(\d{1,2})([\/.\-])(\d{1,2})\2(\d{4}|\d{2})\b/g;
+    while ((m = re.exec(low))) add(m, +m[1], +m[3], +m[4] < 100 ? 2000 + +m[4] : +m[4]);
+    // «dal 5 al 9 maggio», «12-13 novembre»: vale l'inizio
+    re = new RegExp('\\b(\\d{1,2})\\s*(?:[-–—]|al|a|e)\\s*\\d{1,2}\\s+(' + MON + ')\\b\\.?(?:[\\s,.\\-]*(\\d{4}))?', 'g');
+    while ((m = re.exec(low))) add(m, +m[1], monIdx(m[2]) + 1, m[3] ? +m[3] : 0);
+    re = new RegExp("\\b(\\d{1,2})\\s*[°º]?[\\s.\\-\\/]+(" + MON + ")\\b\\.?(?:[\\s,.\\-]*(\\d{4}|'\\d{2}))?", 'g');
+    while ((m = re.exec(low))) {
+      var y = m[3] ? (m[3].charAt(0) === "'" ? 2000 + +m[3].slice(1) : +m[3]) : 0;
+      add(m, +m[1], monIdx(m[2]) + 1, y);
+    }
+    re = /\b(\d{1,2})\/(\d{1,2})\b(?![\/\d])/g;
+    while ((m = re.exec(low))) add(m, +m[1], +m[2], 0);
+    return res.sort(function (a, b) { return a.i - b.i; });
+  }
+
+  // orario di una riga (le date sono già state cancellate): intervallo, oppure due orari separati in celle diverse
+  function lineTime(blanked) {
+    var bare = [], re = /(?:^|[^\d.\/\-])(\d{1,2})([:.])(\d{2})(?![\d.\/])/g, m;
+    while ((m = re.exec(blanked))) {
+      var h = +m[1], mi = +m[3];
+      if (okT(h, mi) && (m[2] === ':' || mi % 15 === 0)) bare.push(hhmm(h, mi));
+    }
+    var t = findTime(blanked);
+    if (t && t.end) return t;
+    if (bare.length >= 2 && bare[1] > bare[0]) return { start: bare[0], end: bare[1] };
+    return t;
+  }
+
+  var EDGE = /^(?:il|lo|la|le|gli|i|un|uno|una|di|del|della|dei|delle|con|per|su|in|a|da|e|ed|ore|ora|orario|alle|dalle|dal|al|classe|classi|data|presso|si|terra|terr\u00e0)$/i;
+  function cleanCell(s) {
+    var t = String(s), low = norm(t);
+    if (low.length === t.length) {
+      var b = t.split('');
+      scanDates(low).forEach(function (d) { for (var k = d.i; k < d.e; k++) b[k] = ' '; });
+      t = b.join('');
+    }
+    t = t.replace(/\b\d{1,2}\s?[:.h]\s?\d{2}\b/g, ' ').replace(/\b\d{1,2}\s*[-–—]\s*(?=\s|$)/g, ' ')
+      .replace(/(?:[1-5][A-Z](?:\s*[-–]\s*[1-5]?[A-Z](?![\p{L}\d]))?[\s,;e]*)+/gu, function (m) { return lineClasses(m).length ? ' ' : m; })
+    ;
+    var w = t.split(/\s+/).filter(function (x) { return x && /[\p{L}\d]/u.test(x) && DAYS.indexOf(norm(x).replace(/[^a-z]/g, '')) < 0; });
+    while (w.length && EDGE.test(w[0].replace(/[^\p{L}]/gu, ''))) w.shift();
+    while (w.length && EDGE.test(w[w.length - 1].replace(/[^\p{L}]/gu, ''))) w.pop();
+    return w.join(' ').replace(/^[\s,;:.\-–—()|\/]+|[\s,;:.\-–—()|\/]+$/g, '');
+  }
+  function median(a, dflt) { if (!a.length) return dflt; a = a.slice().sort(num); return a[Math.floor(a.length / 2)]; }
+  var DAY = 864e5;
+
+  function parseCircolare(rawItems, targets) {
+    var wanted = (Array.isArray(targets) ? targets : String(targets || '').split(/[\s,;]+/))
+      .map(function (s) { return String(s).trim().toUpperCase(); })
+      .filter(function (s, i, a) { return s && a.indexOf(s) === i; });
+    var items = rawItems.map(function (i) { return { s: String(i.s).trim(), x: i.x, y: i.y }; })
+      .filter(function (i) { return i.s; });
+    if (!items.length) return { events: [], classes: [], missing: wanted, reason: 'Il PDF non contiene testo selezionabile (forse è una scansione): serve un PDF con testo.' };
+
+    // Unisce etichette spezzate ("4" + "A" -> "4A")
+    var used = {};
+    items.forEach(function (a, ai) {
+      if (used[ai] || !/^[1-5]$/.test(a.s)) return;
+      for (var bi = 0; bi < items.length; bi++) {
+        var b = items[bi];
+        if (bi === ai || used[bi] || !/^[A-Z]$/.test(b.s)) continue;
+        if (Math.abs(b.y - a.y) < 4 && b.x >= a.x - 2 && b.x - a.x < 25) { a.s += b.s; used[bi] = true; break; }
+      }
+    });
+    items = items.filter(function (_, i) { return !used[i]; });
+
+    // Righe di testo (stessa quota y), celle ordinate da sinistra a destra
+    items.sort(function (a, b) { return a.y - b.y || a.x - b.x; });
+    var lines = [], cur = null;
+    items.forEach(function (it) {
+      if (!cur || Math.abs(it.y - cur.y) > 3.5) { cur = { y: it.y, its: [] }; lines.push(cur); }
+      cur.its.push(it); cur.y = cur.its.reduce(function (s, z) { return s + z.y; }, 0) / cur.its.length;
+    });
+    lines.forEach(function (L, idx) {
+      L.idx = idx;
+      L.its.sort(function (a, b) { return a.x - b.x; });
+      L.text = L.its.map(function (z) { return z.s; }).join(' ');
+      L.low = norm(L.text);
+      L.cls = lineClasses(L.text);
+      L.clsX = Math.min.apply(null, L.its.filter(function (z) { return lineClasses(z.s).length; }).map(function (z) { return z.x; }).concat([1e9]));
+      L.minX = L.its[0].x;
+      L.dateX = Math.min.apply(null, L.its.filter(function (z) { return scanDates(norm(z.s)).length; }).map(function (z) { return z.x; }).concat([1e9]));
+      L.dates = scanDates(L.low);
+      var b = L.low.split('');
+      L.dates.forEach(function (d) { for (var k = d.i; k < d.e; k++) b[k] = ' '; });
+      L.blank = b.join('').replace(new RegExp('\\b(?:' + DAYS.join('|') + ')\\b', 'g'), function (w) { return new Array(w.length + 1).join(' '); });
+      L.time = lineTime(L.blank);
+    });
+
+    // Orario scritto su due righe (cella «14.45 -» e sotto «15.45»): lo si unisce in un unico intervallo
+    lines.forEach(function (L, i) {
+      if (L.cls.length) return;
+      var m1 = L.blank.match(/^\s*(?:dalle\s+|ore\s+|h\s*)?(\d{1,2})[.:](\d{2})\s*[-–—]\s*$/);
+      if (!m1 || !okT(+m1[1], +m1[2])) return;
+      for (var j = i + 1; j < lines.length && lines[j].y - L.y <= 25; j++) { // la riga con le classi può stare in mezzo
+        var N = lines[j], m2 = N.blank.match(/^\s*(?:alle\s+)?(\d{1,2})[.:](\d{2})\s*$/);
+        if (m2 && !N.cls.length && okT(+m2[1], +m2[2])) { L.time = { start: hhmm(+m1[1], +m1[2]), end: hhmm(+m2[1], +m2[2]) }; N.time = null; break; }
+      }
+    });
+
+    // Data di emissione (Rimini, 28/04/2025 ...): serve a correggere gli anni, non è un impegno
+    var issueDate = null, firstCls = lines.findIndex(function (L) { return L.cls.length; });
+    if (firstCls < 0) firstCls = lines.length;
+    var isMeta = function (L) {
+      if (!L.dates.length || L.cls.length) return false;
+      if (/\b(prot|protocollo|circolare|pagina|pag\.|stampat|pubblicat|firma|dirigente|scadenza)\b/.test(L.low)) return true;
+      var pl = L.low.match(/^\s*([a-z' ]{2,30}),\s*(?:li\s+|il\s+)?(?:\d|[a-z]+\s+\d)/); // «Rimini, 28/04/2025»
+      return !!pl && L.idx < firstCls && L.idx < 15 && DAYS.indexOf(pl[1].trim()) < 0 && L.dates[0].i < 40;
+    };
+    lines.forEach(function (L) {
+      L.meta = isMeta(L);
+      if (L.meta && !issueDate && L.dates[0].y && !/scadenza/.test(L.low)) issueDate = mkDate(L.dates[0].y, L.dates[0].mo, L.dates[0].d);
+    });
+    var baseDay = issueDate || new Date();
+    var fixedYear = false;
+    var resolve = function (dm) {
+      var dt;
+      if (dm.y) {
+        dt = mkDate(dm.y, dm.mo, dm.d);
+        if (!dt) return null;
+        if (issueDate && dt.getFullYear() !== issueDate.getFullYear() && (dt < new Date(issueDate.getTime() - 30 * DAY) || dt > new Date(issueDate.getTime() + 450 * DAY))) {
+          var y2 = mkDate(issueDate.getFullYear(), dm.mo, dm.d);
+          if (y2 && y2 < new Date(issueDate.getTime() - 60 * DAY)) y2 = mkDate(issueDate.getFullYear() + 1, dm.mo, dm.d);
+          if (y2 && y2.getFullYear() !== dt.getFullYear()) { dt = y2; fixedYear = true; }
+        }
+        return dt;
+      }
+      dt = mkDate(baseDay.getFullYear(), dm.mo, dm.d);
+      if (dt && dt < new Date(baseDay.getTime() - 60 * DAY)) dt = mkDate(baseDay.getFullYear() + 1, dm.mo, dm.d);
+      return dt;
+    };
+
+    var clsLines = lines.filter(function (L) { return L.cls.length; });
+    var classesFound = [];
+    clsLines.forEach(function (L) { L.cls.forEach(function (k) { if (classesFound.indexOf(k) < 0) classesFound.push(k); }); });
+    classesFound.sort();
+    if (!clsLines.length) return { events: [], classes: [], missing: wanted, fixedYear: false, reason: 'Nessuna classe (per esempio 5J o 3A) trovata nel PDF.' };
+
+    // Blocchi: righe con classi vicine tra loro (una tabella, un elenco)
+    var gaps = [];
+    for (var g = 1; g < clsLines.length; g++) { var dg = clsLines[g].y - clsLines[g - 1].y; if (dg > 0 && dg < 120) gaps.push(dg); }
+    var med = median(gaps, 16);
+    var blocks = [], bl = null;
+    clsLines.forEach(function (L, i) {
+      if (!bl || L.y - clsLines[i - 1].y > Math.max(med * 1.6, 14)) { bl = { lines: [] }; blocks.push(bl); }
+      bl.lines.push(L); L.block = bl;
+    });
+    blocks.forEach(function (b) { b.lo = b.lines[0].y - med * 0.6; b.hi = b.lines[b.lines.length - 1].y + med * 0.6; });
+
+    var usable = function (L) { return !L.meta; };
+    var nearest = function (list, y) { return list.reduce(function (best, L) { return !best || Math.abs(L.y - y) < Math.abs(best.y - y) ? L : best; }, null); };
+    var docText = lines.map(function (L) { return L.text; }).join('\n');
+
+    var rows = [], undated = 0;
+    clsLines.forEach(function (L) {
+      var b = L.block, src = null, dm = null;
+      // DATA: nella riga > cella unita dentro il blocco > ultima data sopra > prima data sotto
+      if (L.dates.length && usable(L)) { src = L; dm = L.dates[0]; }
+      if (!dm) {
+        var inside = lines.filter(function (z) { return z.dates.length && usable(z) && z.y >= b.lo && z.y <= b.hi && (z.cls.length ? z.dateX + 8 < z.clsX : z.minX + 8 < L.clsX); }); // cella unita a sinistra, non un titolo di giorno
+        var n = nearest(inside, L.y);
+        if (n) { src = n; dm = n.dates[0]; }
+      }
+      if (!dm) for (var i = L.idx - 1; i >= 0 && !dm; i--) if (lines[i].dates.length && usable(lines[i])) { src = lines[i]; dm = src.dates[src.dates.length - 1]; }
+      if (!dm) for (var j = L.idx + 1; j < lines.length && !dm; j++) if (lines[j].dates.length && usable(lines[j])) { src = lines[j]; dm = src.dates[0]; }
+      var dt = dm ? resolve(dm) : null;
+      if (!dt) { undated++; return; }
+
+      // ORARIO: nella riga > cella unita dentro il blocco > riga tra la data e questa > riga della data
+      var tm = L.time;
+      if (!tm) {
+        var insT = lines.filter(function (z) { return z.time && !z.cls.length && z.y >= b.lo && z.y <= b.hi && z.minX + 8 < L.clsX; });
+        var nt = nearest(insT, L.y); if (nt) tm = nt.time;
+      }
+      if (!tm) for (var k = L.idx - 1; k >= 0 && k >= Math.min(src.idx, L.idx) && !tm; k--) if (lines[k].time && !lines[k].cls.length) tm = lines[k].time;
+      if (!tm && src !== L && src.time && !src.cls.length) tm = src.time;
+
+      // DESCRIZIONE
+      var keyOf = function (s) { var k = KEYS.filter(function (z) { return z[0].test(s); })[0]; return k ? k[1] : ''; };
+      // testo che resta dopo aver tolto classi, date e orari (cella per cella)
+      var cands = L.its.map(function (z) { return cleanCell(z.s); }).filter(function (s) { return s.replace(/[^\p{L}]/gu, '').length >= 3; });
+      var nw = function (s) { return s.split(/\s+/).length; };
+      var desc = '', own = keyOf(L.text);
+      var shortC = cands.filter(function (s) { return nw(s) <= (own ? 5 : 8); }).sort(function (a, b) { return b.length - a.length; })[0];
+      if (shortC && own) { var km = KEYS.filter(function (z) { return z[0].test(shortC); })[0]; var mi = km ? shortC.search(km[0]) : -1; if (mi > 0) shortC = shortC.slice(mi); else if (mi < 0) shortC = ''; }
+      var tableLike = L.its.length >= 2;
+      if (shortC && (tableLike || own) && cands.length <= 2) desc = cap(shortC);      // cella «Descrizione»
+      else if (own) desc = own;                                  // frase lunga: tipo di impegno riconosciuto
+      else if (!own) { // nessun tipo noto: vale solo una cella di sola descrizione (senza classe, data od ora)
+        var pure = L.its.filter(function (z) { return !lineClasses(z.s).length && !scanDates(norm(z.s)).length && !/\d{1,2}[.:]\d{2}/.test(z.s); })
+          .map(function (z) { return cleanCell(z.s); }).filter(function (s) { return s.replace(/[^\p{L}]/gu, '').length >= 4 && nw(s) <= 8; });
+        if (pure.length && tableLike) desc = cap(pure.sort(function (a, b) { return b.length - a.length; })[0]);
+      }
+      if (!desc) for (var h = L.idx - 1; h >= 0 && h >= L.idx - 10 && !desc; h--) if (!lines[h].cls.length) desc = keyOf(lines[h].text);
+      if (!desc) desc = keyOf(docText);
+      if (!desc) { var og = docText.match(/oggetto\s*:?\s*([^\n]{4,})/i); if (og) { var c = stripTokens(og[1]); if (c.length >= 4) desc = cap(c); } }
+      if (!desc) desc = 'Impegno scolastico';
+      rows.push({ cls: L.cls, dt: dt, tm: tm || { start: '', end: '' }, desc: desc });
+    });
+
+    var events = [], seenE = {};
+    rows.forEach(function (r) {
+      wanted.forEach(function (k) {
+        if (r.cls.indexOf(k) < 0) return;
+        var key = [k, iso(r.dt), r.tm.start, r.tm.end, r.desc].join('|');
+        if (seenE[key]) return; seenE[key] = 1;
+        events.push({ title: r.desc + (r.desc.indexOf(k) < 0 ? ' ' + k : ''), date: iso(r.dt), time: r.tm.start, endTime: r.tm.end, cls: k, description: r.desc,
+          location: '', kind: 'impegno', source: 'Circolare', note: '' });
+      });
+    });
+    events.sort(function (a, b) { return (a.date + a.time + a.cls).localeCompare(b.date + b.time + b.cls); });
+    var missing = wanted.filter(function (k) { return classesFound.indexOf(k) < 0; });
+    return {
+      events: events, classes: classesFound, missing: missing, fixedYear: fixedYear,
+      reason: events.length || !wanted.length ? '' :
+        (missing.length === wanted.length ? 'Classi non trovate nel PDF: ' + missing.join(', ') + '.' :
+          (undated ? 'Classe trovata ma senza una data riconoscibile nel PDF.' : 'Nessun impegno per le classi scelte.'))
+    };
+  }
+
+  /* ---------- Email: estrazione generale di data, ora e impegno ---------- */
+  var MESI_ABBR = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+  var MON = MESI.concat(MESI_ABBR).join('|');
+  var DAYS = ['domenica','lunedi','martedi','mercoledi','giovedi','venerdi','sabato'];
+  var KEYS = [
+    [/consigli?o?\s+di\s+classe|consiglio\s+della\s+classe/i, 'Consiglio di Classe'],
+    [/collegio\s+(?:dei\s+)?docenti/i, 'Collegio Docenti'],
+    [/scrutin\w*/i, 'Scrutini'],
+    [/colloqui\w*/i, 'Colloqui'],
+    [/assemblea/i, 'Assemblea'],
+    [/dipartiment\w*/i, 'Riunione di Dipartimento'],
+    [/interrogazion\w*/i, 'Interrogazione'],
+    [/verifica|compito in classe|simulazione|prova scritta/i, 'Verifica'],
+    [/esam[ei]/i, 'Esame'],
+    [/uscita didattica|gita/i, 'Uscita didattica'],
+    [/open day/i, 'Open Day'],
+    [/ricevimento/i, 'Ricevimento'],
+    [/recupero/i, 'Recupero'],
+    [/riunione|convocazione/i, 'Riunione']
+  ];
+  var norm = function (s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[°º]/g, ' '); };
+
+  function findClasses(text) {
+    var out = [], re = /\b([1-5])\s?[°ª^]?\s?([A-Z])\b|\b([1-5])([a-z])\b/g, m;
+    while ((m = re.exec(String(text)))) {
+      var c = (m[1] || m[3]) + (m[2] || m[4]).toUpperCase();
+      if (out.indexOf(c) < 0) out.push(c);
+    }
+    return out;
+  }
+  function mkDate(y, mo, d) { var x = new Date(y, mo - 1, d); return x.getFullYear() === y && x.getMonth() === mo - 1 && x.getDate() === d ? x : null; }
+
+  // Toglie risposte citate e intestazioni di messaggi inoltrati (che contengono date non pertinenti)
+  function cleanBody(b) {
+    var lines = String(b || '').replace(/\r/g, '').split('\n'), out = [], hdr = false;
+    var HDR = /^(da|from|a|to|cc|ccn|bcc|oggetto|subject|data|date|inviato|inviato il|sent|reply-to|rispondi a)\s*:/i;
+    for (var i = 0; i < lines.length; i++) {
+      var t = lines[i].trim();
+      if (/^(il giorno\b.{3,200}scritto\s*:?|on\b.{3,200}wrote\s*:?)$/i.test(t)) break;
+      if (/^>/.test(t)) continue;
+      if (/(messaggio inoltrato|forwarded message|original message|messaggio originale)/i.test(t)) { hdr = true; continue; }
+      if (/^(da|from)\s*:.*[@<]/i.test(t)) { hdr = true; continue; }
+      if (hdr) { if (HDR.test(t) || !t) continue; hdr = false; }
+      out.push(lines[i]);
+    }
+    return out.join('\n');
+  }
+
+  function findDate(low, today, minDate) {
+    var base = new Date(today.getFullYear(), today.getMonth(), today.getDate()), c = [], m, re, d;
+    var add = function (i, x) { if (x) c.push({ i: i, d: x }); };
+    var roll = function (day, mo) { // senza anno: quest'anno, o il prossimo se la data è già passata
+      var x = mkDate(base.getFullYear(), mo, day);
+      if (x && x < new Date(base.getTime() - (minDate ? 60 * DAY : 0))) x = mkDate(base.getFullYear() + 1, mo, day); // con minDate: una data recente già passata resta passata
+      return x;
+    };
+    re = /\b(\d{4})-(\d{1,2})-(\d{1,2})\b/g;
+    while ((m = re.exec(low))) add(m.index, mkDate(+m[1], +m[2], +m[3]));
+    re = /\b(\d{1,2})([\/.\-])(\d{1,2})\2(\d{4}|\d{2})\b/g;
+    while ((m = re.exec(low))) add(m.index, mkDate(+m[4] < 100 ? 2000 + +m[4] : +m[4], +m[3], +m[1]));
+    // intervalli di date: «12.11-13.11», «12/11 - 13/11» -> inizio
+    re = /\b(\d{1,2})[\/.](\d{1,2})\s*[-–—]\s*\d{1,2}[\/.]\d{1,2}\b(?![\/.]\d)/g;
+    while ((m = re.exec(low))) add(m.index, roll(+m[1], +m[2]));
+    // «12-13 novembre» -> inizio
+    re = new RegExp('\\b(\\d{1,2})\\s*[-–—]\\s*\\d{1,2}\\s+(' + MON + ')\\b(?:[\\s,.\\-]*(\\d{4}))?', 'g');
+    while ((m = re.exec(low))) { var mo2 = MESI.indexOf(m[2]); if (mo2 < 0) mo2 = MESI_ABBR.indexOf(m[2]); add(m.index, m[3] ? mkDate(+m[3], mo2 + 1, +m[1]) : roll(+m[1], mo2 + 1)); }
+    re = new RegExp("\\b(\\d{1,2})[\\s.\\-\\/]+(" + MON + ")\\b\\.?(?:[\\s,.\\-]*(\\d{4}|'\\d{2}))?", 'g');
+    while ((m = re.exec(low))) {
+      var mo = MESI.indexOf(m[2]); if (mo < 0) mo = MESI_ABBR.indexOf(m[2]);
+      var y = m[3] ? (m[3].charAt(0) === "'" ? 2000 + +m[3].slice(1) : +m[3]) : 0;
+      add(m.index, y ? mkDate(y, mo + 1, +m[1]) : roll(+m[1], mo + 1));
+    }
+    re = /\b(\d{1,2})\/(\d{1,2})\b(?![\/\d])/g;
+    while ((m = re.exec(low))) add(m.index, roll(+m[1], +m[2]));
+    if (c.length) { c.sort(function (a, b) { return a.i - b.i; }); var okc = minDate ? c.filter(function (z) { return z.d >= minDate; })[0] : null; return (okc || c[0]).d; }
+    // senza data esplicita: oggi / domani / tra N giorni / giorno della settimana
+    var rel = [];
+    re = /\b(oggi|domani|dopodomani)\b/g;
+    while ((m = re.exec(low))) { d = new Date(base); d.setDate(d.getDate() + { oggi: 0, domani: 1, dopodomani: 2 }[m[1]]); rel.push({ i: m.index, d: d }); }
+    re = /\btra\s+(\d{1,2})\s+giorn/g;
+    while ((m = re.exec(low))) { d = new Date(base); d.setDate(d.getDate() + +m[1]); rel.push({ i: m.index, d: d }); }
+    re = new RegExp('\\b(' + DAYS.join('|') + ')\\b(\\s+(?:prossimo|p\\.v\\.))?', 'g');
+    while ((m = re.exec(low))) {
+      var diff = (DAYS.indexOf(m[1]) - base.getDay() + 7) % 7; if (diff === 0 && m[2]) diff = 7;
+      d = new Date(base); d.setDate(d.getDate() + diff); rel.push({ i: m.index, d: d });
+    }
+    if (rel.length) { rel.sort(function (a, b) { return a.i - b.i; }); var okr = minDate ? rel.filter(function (z) { return z.d >= minDate; })[0] : null; return (okr || rel[0]).d; }
+    return null;
+  }
+
+
+  // «verifica di italiano il 12/11» -> «Verifica di italiano» (il tipo + le parole che lo completano, fino a data, ora, classe o punteggiatura)
+  var ART = ['il','lo','la','le','i','gli','un','una','l'], PREP = ['di','del','della','delle','dei','degli','dello','con','a','in','per','da','su'];
+  var STOPW = ['alle','alla','allo','ore','ora','dalle','dal','al','che','si','e','ed','o','ma','tra','fra','oggi','domani','dopodomani','prossimo','prossima','presso','alle','ai','agli','nel','nella','sara','svolgera','terra','avra','ci','vi','sono','e\u0300'];
+  function fullType(key, body, subj) {
+    var src = key[0].test(body) ? body : subj, m = src.match(key[0]);
+    if (!m) return key[1];
+    var tail = src.slice(m.index + m[0].length), words = [], re = /^[ \t]+([\p{L}'’]+)/u, w;
+    while (words.length < 5 && (w = re.exec(tail))) {
+      var n = norm(w[1]);
+      var prev = words.length ? norm(words[words.length - 1]) : '';
+      if (ART.indexOf(n) >= 0 ? PREP.indexOf(prev) < 0 : (STOPW.indexOf(n) >= 0 || MESI.indexOf(n) >= 0 || DAYS.indexOf(n) >= 0)) break;
+      if ((n === 'della' || n === 'delle' || n === 'del') && /^[ \t]+class/i.test(tail.slice(w[0].length))) break;
+      if (n === 'classe' || n === 'classi') break;
+      words.push(w[1]); tail = tail.slice(w[0].length);
+    }
+    while (words.length && /^(di|del|della|delle|dei|degli|dello|con|in|d')$/i.test(words[words.length - 1])) words.pop();
+    if (!words.length) return key[1];
+    var s = (m[0] + ' ' + words.join(' ')).replace(/\s+/g, ' ').trim();
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  var okT = function (h, mi) { return h >= 0 && h <= 23 && mi >= 0 && mi <= 59; };
+  var hhmm = function (h, mi) { return pad(h) + ':' + pad(mi); };
+  function pm(h, sfx) { return sfx && /^(pm|del pomeriggio|di pomeriggio|di sera|della sera)$/.test(sfx) && h < 12 ? h + 12 : h; }
+  function findTime(low) {
+    var m, CTX = '\\b(?:dalle ore|alle ore|dalle|alle|ore|orario|ora|h)\\.?\\s*:?\\s*';
+    var TM = '(\\d{1,2})(?:[:.,h](\\d{2}))?', GUARD = '(?![a-z\\d])(?!\\s*(?:' + MON + ')\\b)(?!\\s*[\\/\\-]\\s*\\d)';
+    var SFX = '(?:\\s*(am|pm|del pomeriggio|di pomeriggio|del mattino|di mattina|di sera|della sera)\\b)?';
+    // 1) intervallo con contesto: «dalle 15 alle 16», «ore 15.30-16.30»
+    m = low.match(new RegExp(CTX + TM + SFX + '\\s*(?:-|–|—|alle ore|alle|fino alle ore|fino alle|a)\\s*' + TM + GUARD));
+    if (m) {
+      var h1 = pm(+m[1], m[3]), h2 = pm(+m[4], m[3]), m1 = +(m[2] || 0), m2 = +(m[5] || 0);
+      if (okT(h1, m1) && okT(h2, m2)) return { start: hhmm(h1, m1), end: hhmm(h2, m2) };
+    }
+    // 2) intervallo senza contesto: «15:00-16:00»
+    m = low.match(/\b(\d{1,2})[:h](\d{2})\s*(?:-|–|—|alle|fino alle)\s*(\d{1,2})[:h](\d{2})\b/);
+    if (m && okT(+m[1], +m[2]) && okT(+m[3], +m[4])) return { start: hhmm(+m[1], +m[2]), end: hhmm(+m[3], +m[4]) };
+    // 2b) intervallo con punto, solo se i minuti sono «tondi» (così «12.11-13.11» resta una data)
+    m = low.match(/(?:^|[^\d.\/\-])(\d{1,2})\.(00|15|30|45)\s*(?:-|–|—|alle|fino alle)\s*(\d{1,2})\.(00|15|30|45)(?![\d.\/])/);
+    if (m && okT(+m[1], +m[2]) && okT(+m[3], +m[4])) return { start: hhmm(+m[1], +m[2]), end: hhmm(+m[3], +m[4]) };
+    // 3) singola con contesto: «ore 15:30», «alle 15», «h 9.30», «alle 3 del pomeriggio»
+    m = low.match(new RegExp(CTX + TM + GUARD + SFX));
+    if (m) { var h = pm(+m[1], m[3]); if (okT(h, +(m[2] || 0))) return { start: hhmm(h, +(m[2] || 0)), end: '' }; }
+    // 4) ora isolata: «15:30», «15h30», «15.30»
+    m = low.match(/\b([01]?\d|2[0-3])[:h]([0-5]\d)\b/);
+    if (m) return { start: hhmm(+m[1], +m[2]), end: '' };
+    m = low.match(/(?:^|[^\d.\/\-])([01]?\d|2[0-3])\.(00|1[3-9]|[2-5]\d)(?![\d.\/])(?!\s*[-–—]\s*\d{1,2}[.\/]\d)/);
+    if (m) return { start: hhmm(+m[1], +m[2]), end: '' };
+    if (/\bmezzogiorno\b/.test(low)) return { start: '12:00', end: '' };
+    return null;
+  }
+
+  var FILLER = new RegExp('(?<![\\p{L}])(?:' + ['lunedì','martedì','mercoledì','giovedì','venerdì','lunedi','martedi','mercoledi','giovedi','venerdi','sabato','domenica','oggi','domani','dopodomani','prossimo','data','orario','classe','classi','giorno','il','lo','la','le','in','presso','per','alle','dalle','ore','di','del','della','da','a','e','con','su','ciao','buongiorno','buonasera','salve','gentili','cari','colleghi','docenti','ricordo','ricorda','comunica','che','si','vi','ti','mi','cordiali','saluti','grazie'].join('|') + ')(?![\\p{L}])', 'giu');
+  // toglie date, orari, classi e parole di contorno: ciò che resta descrive l'impegno
+  function stripTokens(s) {
+    return String(s)
+      .replace(/\b\d{4}-\d{1,2}-\d{1,2}\b/g, ' ')
+      .replace(/\b\d{1,2}[\/.\-]\d{1,2}(?:[\/.\-]\d{2,4})?\b/g, ' ')
+      .replace(new RegExp("\\b\\d{1,2}\\s*[°º]?[\\s.\\-\\/]+(?:" + MON + ")\\b\\.?(?:[\\s,.\\-]*(?:\\d{4}|'\\d{2}))?", 'ig'), ' ')
+      .replace(/\b\d{1,2}\s?[:.h]\s?\d{2}\b/g, ' ')
+      .replace(/\b(?:dalle|alle|ore|orario|ora|h)\s*:?\s*\d{1,2}\b/ig, ' ')
+      .replace(/\b[1-5]\s?[°ª^]?\s?[A-Za-z]\b/g, ' ')
+      .replace(/\baula\s+(?:magna|\d+\w*)|\bci vediamo\b|\bvediamoci\b|\bpomeriggio\b|\bmattina\b|\bmattino\b|\bsera\b/ig, ' ')
+      .replace(FILLER, ' ')
+      .replace(/[^\p{L}\d\s'’\-]/gu, ' ').replace(/\s+/g, ' ').trim();
+  }
+  var cap = function (s) { s = s.slice(0, 60).trim(); return s.charAt(0).toUpperCase() + s.slice(1); };
+
+  // Cerca nel TESTO (e solo se manca, nell'oggetto) data, orario e classe.
+  // opts: { classes, onlyMine }  -  m.received (Date): data di ricezione, usata se il testo non indica una data
+  function analyzeEmail(m, today, opts) {
+    today = today || new Date(); opts = opts || {};
+    var kw = String(opts.keyword || '').trim().toLowerCase();
+    var subj = m.subject || '', body = cleanBody(m.body || ''), all = subj + '\n' + body;
+    var bodyLow = norm(body), subjLow = norm(subj), low = bodyLow + ' ' + subjLow;
+    if (!body.trim() && !subj.trim()) return { event: null, reason: 'email vuota o testo non leggibile' };
+
+    var fb = findClasses(body), found = fb.length ? fb : findClasses(subj);
+    var mine = (opts.classes || []).filter(function (c) { return found.indexOf(c) >= 0; });
+    if (found.length && !mine.length && opts.onlyMine !== false && (opts.classes || []).length)
+      return { event: null, reason: 'cita solo altre classi (' + found.slice(0, 4).join(', ') + '): non è tra le tue' };
+
+    var rcv = m.received instanceof Date && !isNaN(m.received) ? m.received : null;
+    var baseDay = rcv && (!opts.minDate || rcv >= opts.minDate) ? rcv : today; // «domani» = giorno dopo l'invio
+    var d = findDate(bodyLow, baseDay, opts.minDate) || findDate(subjLow, baseDay, opts.minDate);
+    var t = findTime(bodyLow) || findTime(subjLow);
+    var noDate = false;
+    if (!d) {
+      if (!t && !found.length) return { event: null, reason: 'nessuna data, orario o classe nel testo' };
+      var rc = m.received;
+      if (rc instanceof Date && !isNaN(rc)) { d = new Date(rc.getFullYear(), rc.getMonth(), rc.getDate()); noDate = true; }
+      else return { event: null, reason: 'data non riconosciuta nel testo' };
+    }
+    if (opts.minDate && d < opts.minDate) return { event: null, reason: 'data già passata (' + iso(d) + '): non inserita' };
+    t = t || { start: '', end: '' }; // senza orario: impegno per tutta la giornata
+    var cls = mine.length ? mine : found.slice(0, 3);
+
+    // impegno: riga etichettata > tipo noto > oggetto > prima riga utile del testo
+    var title = '', lab = body.match(/^\s*(?:impegno|evento|attivit[àa]|argomento|titolo|motivo|descrizione|tipo)\s*[:\-–]\s*(.+)$/im);
+    if (lab) title = cap(stripTokens(lab[1]));
+    if (!title) { var key = KEYS.filter(function (k) { return k[0].test(all); })[0]; if (key) title = fullType(key, body, subj); }
+    if (!title) {
+      var s = subj.replace(/^\s*((re|r|fwd?|i)\s*:\s*)+/i, '');
+      if (kw) s = s.replace(new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'ig'), ' ');
+      title = stripTokens(s).length >= 3 ? cap(stripTokens(s)) : '';
+    }
+    if (!title) {
+      var ls = body.split('\n');
+      for (var i = 0; i < ls.length && !title; i++) { var c2 = stripTokens(ls[i]); if (c2.length >= 4) title = cap(c2); }
+    }
+    if (!title) title = 'Impegno scolastico';
+
+    var loc = '', lm = body.match(/^\s*(?:luogo|sede|aula|dove)\s*[:\-–]\s*([^\n]{2,60})$/im);
+    if (lm) loc = lm[1].trim();
+    else if (/telematic|online|meet\.google|zoom\.us|teams\.microsoft|\bmeet\b|\bzoom\b/.test(low)) loc = 'Telematica';
+    else { var am = low.match(/aula\s+(?:magna|\d+\w*)|palestra|laboratorio/); if (am) loc = am[0]; }
+
+    return { event: {
+      title: title + (cls.length && title.indexOf(cls[0]) < 0 ? ' ' + cls.join(', ') : ''), date: iso(d), time: t.start, endTime: t.end,
+      location: loc, kind: 'impegno', source: 'Gmail', note: 'Da: ' + (m.from || '') + ' · ' + subj + (noDate ? ' · data non indicata nel testo: usata la data di ricezione' : '')
+    }, reason: '' };
+  }
+  function parseEmail(m, today, opts) { return analyzeEmail(m, today, opts).event; }
+
+  var api = { parseCircolare: parseCircolare, parseEmail: parseEmail, analyzeEmail: analyzeEmail, findClasses: findClasses, MESI: MESI };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  root.AgendaParser = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(function () {
+  var AP = window.AgendaParser;
+  var MESI = AP.MESI;
+  var GIORNI = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
+  var $ = function (id) { return document.getElementById(id); };
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  var iso = function (d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+  var parseIso = function (s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); };
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var addDays = function (n) { var d = new Date(today); d.setDate(d.getDate() + n); return d; };
+  var ico = function (n) { return '<svg class="ico"><use href="#i-' + n + '"/></svg>'; };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var rel = function (s) {
+    var d = parseIso(s), diff = Math.round((d - today) / 864e5);
+    return diff === 0 ? 'oggi' : diff === 1 ? 'domani' : d.getDate() + ' ' + MESI[d.getMonth()];
+  };
+
+  /* ---------- Dati e impostazioni (salvati nel browser) ---------- */
+  var KEY = 'agenda-scolastica-v2', SKEY = 'agenda-scolastica-settings';
+  var items = [], uid = 1;
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved && saved.length) { items = saved; uid = Math.max.apply(null, items.map(function (i) { return i.id; })) + 1; }
+  } catch (e) {}
+  var settings = { classes: ['5J'], endpoint: '', apiKey: '', clientId: '', autoAdd: true, onlyMine: true, linked: false, emailToCloud: false, keyword: 'scuola', scope: 'any' };
+  try {
+    var st = JSON.parse(localStorage.getItem(SKEY) || 'null');
+    if (st) {
+      Object.keys(st).forEach(function (k) { settings[k] = st[k]; });
+      if (!Array.isArray(st.classes) && st.targetClass) settings.classes = [st.targetClass]; // migrazione dalla versione precedente
+    }
+  } catch (e) {}
+  // valori pubblici incorporati nell'app (file config.js): ogni utente li usa senza doverli inserire
+  var CONFIG = { clientId: '', endpoint: '', apiKey: '', emailToCloud: false, devHash: '' };
+  try { Object.keys(window.APP_CONFIG || {}).forEach(function (k) { CONFIG[k] = window.APP_CONFIG[k]; }); } catch (e) {}
+  var DEV_HASH = String(CONFIG.devHash || '');
+  // Modalità sviluppatore: solo chi conosce il codice vede Client ID, URL cloud e chiave API. Gli altri utenti usano i valori incorporati.
+  var DEV = false; try { DEV = localStorage.getItem('agenda-dev') === '1'; } catch (e) {}
+  if (!DEV) { settings.clientId = CONFIG.clientId; settings.endpoint = CONFIG.endpoint; settings.apiKey = CONFIG.apiKey; settings.emailToCloud = !!(CONFIG.endpoint && CONFIG.emailToCloud); }
+  else { settings.clientId = settings.clientId || CONFIG.clientId; settings.endpoint = settings.endpoint || CONFIG.endpoint; settings.apiKey = settings.apiKey || CONFIG.apiKey; }
+  // Apri l'app con #dev in fondo all'indirizzo per inserire il codice (e di nuovo per uscire)
+  function devUnlock() {
+    if (location.hash !== '#dev') return;
+    history.replaceState(null, '', location.pathname + location.search);
+    if (DEV) { try { localStorage.removeItem('agenda-dev'); } catch (e) {} location.reload(); return; }
+    var code = prompt('Codice sviluppatore:');
+    if (!code || !window.crypto || !crypto.subtle) return;
+    crypto.subtle.digest('SHA-256', new TextEncoder().encode(code)).then(function (h) {
+      var hex = Array.prototype.map.call(new Uint8Array(h), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+      if (hex === DEV_HASH && DEV_HASH) { try { localStorage.setItem('agenda-dev', '1'); } catch (e) {} location.reload(); }
+      else toast('Codice non valido');
+    });
+  }
+  setTimeout(devUnlock, 700); window.addEventListener('hashchange', devUnlock);
+  // animazioni dello sfondo in pausa quando la scheda non è visibile (risparmio batteria)
+  document.addEventListener('visibilitychange', function () { document.documentElement.classList.toggle('bg-pause', document.hidden); });
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) {} }
+  function saveSettings() { try { localStorage.setItem(SKEY, JSON.stringify(settings)); } catch (e) {} }
+
+  var view = new Date(today.getFullYear(), today.getMonth(), 1);
+  var circolari = [];
+
+  /* ---------- Toast ---------- */
+  var tt;
+  function toast(msg) { var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(tt); tt = setTimeout(function () { t.hidden = true; }, 3200); }
+
+  /* ---------- Pillole ---------- */
+  function renderPills() {
+    function fill(box, kind) {
+      var list = items.filter(function (i) { return i.kind === kind && !i.done && parseIso(i.date) >= today; })
+        .sort(function (a, b) { return a.date.localeCompare(b.date); }).slice(0, 4);
+      var html = '';
+      for (var k = 0; k < 4; k++) {
+        var it = list[k];
+        html += it
+          ? '<button class="pill" data-id="' + it.id + '" title="' + esc(it.title + ' · ' + it.date) + '">' + esc(it.title) + '</button>'
+          : '<span class="pill empty">...</span>';
+      }
+      box.innerHTML = html;
+    }
+    fill($('pills-rem'), 'promemoria');
+    fill($('pills-due'), 'scadenza');
+  }
+
+  /* ---------- Calendario ---------- */
+  function byDate(d) { var s = iso(d); return items.filter(function (i) { return i.date === s; }); }
+  function renderCal() {
+    $('month-title').textContent = MESI[view.getMonth()] + ' ' + view.getFullYear();
+    var html = GIORNI.map(function (g, i) { return '<div class="dow' + (i > 4 ? ' we' : '') + '">' + g + '</div>'; }).join('');
+    var first = new Date(view.getFullYear(), view.getMonth(), 1);
+    var lead = (first.getDay() + 6) % 7;
+    var start = new Date(first); start.setDate(1 - lead);
+    var days = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+    var rows = Math.ceil((lead + days) / 7);
+    for (var n = 0; n < rows * 7; n++) {
+      var d = new Date(start); d.setDate(start.getDate() + n);
+      var list = byDate(d).sort(function (a, b) { return (a.time || '').localeCompare(b.time || ''); });
+      var hasImp = list.some(function (i) { return i.kind === 'impegno'; });
+      var cls = 'cell';
+      if (n % 7 > 4) cls += ' weekend';
+      if (hasImp) cls += ' impegno';
+      if (iso(d) === iso(today)) cls += ' today';
+      if (d.getMonth() !== view.getMonth()) cls += ' out';
+      var shown = list.slice(0, 2).map(function (i) {
+        var done = i.done;
+        var icon = i.kind === 'impegno' && !done ? 'clock' : (done ? 'check' : 'circle');
+        return '<div class="it' + (done ? ' ok' : '') + '">' + ico(icon) + '<span>' + esc(i.title) + (i.time ? ' ' + i.time : '') + '</span></div>';
+      }).join('');
+      var more = list.length > 2 ? '<div class="more">+' + (list.length - 2) + ' altri</div>' : '';
+      var dots = list.slice(0, 4).map(function () { return '<i class="dot"></i>'; }).join('');
+      var label = d.getDate() + ' ' + MESI[d.getMonth()] + (list.length ? ', ' + list.length + ' voci' : '');
+      html += '<button class="' + cls + '" data-date="' + iso(d) + '" aria-label="' + label + '"><div class="num">' + d.getDate() +
+        (iso(d) === iso(today) ? '<span class="tag-today">oggi</span>' : '') + '</div><div class="items">' + shown + more + '</div><div class="dots">' + dots + '</div></button>';
+    }
+    $('cal').innerHTML = html;
+  }
+  function renderAll() { renderPills(); renderCal(); persist(); }
+  function gotoDate(s) { var d = parseIso(s); view = new Date(d.getFullYear(), d.getMonth(), 1); renderCal(); }
+
+  /* ---------- Fogli ---------- */
+  var lastFocus = null;
+  function openSheet(html) {
+    lastFocus = document.activeElement;
+    var o = $('overlay'); o.innerHTML = '<div class="sheet" role="dialog" aria-modal="true">' + html + '</div>'; o.hidden = false;
+    var f = o.querySelector('input:not([type=file]),select,button'); if (f) f.focus();
+  }
+  function closeSheet() { $('overlay').hidden = true; $('overlay').innerHTML = ''; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  var head = function (t) { return '<div class="sheet-head"><h3>' + t + '</h3><button class="x2" data-close aria-label="Chiudi">' + ico('x') + '</button></div>'; };
+  function kindLabel(k) { return k === 'impegno' ? 'Impegno' : k === 'scadenza' ? 'Scadenza' : 'Promemoria'; }
+  function timeLabel(i) { return i.time ? i.time + (i.endTime ? '–' + i.endTime : '') : ''; }
+
+  function openDetail(id) {
+    var it = items.find(function (i) { return i.id === id; }); if (!it) return;
+    var d = parseIso(it.date);
+    openSheet(head(esc(it.title)) +
+      '<div class="actions-row"><span class="chip">' + kindLabel(it.kind) + '</span><span class="chip">Fonte: ' + esc(it.source) + '</span>' + (it.done ? '<span class="chip">Completato</span>' : '') + '</div>' +
+      '<p>' + d.getDate() + ' ' + MESI[d.getMonth()] + ' ' + d.getFullYear() + (it.time ? ' · ore ' + timeLabel(it) : '') + '</p>' +
+      (it.location ? '<p>' + esc(it.location) + '</p>' : '') +
+      (it.note ? '<p>' + esc(it.note) + '</p>' : '') +
+      '<div class="actions-row"><button class="btn primary" data-toggle="' + id + '">' + ico('check') + (it.done ? 'Riapri' : 'Segna completato') + '</button>' +
+      '<button class="btn danger" data-del="' + id + '">Elimina</button></div>');
+  }
+
+  function openDay(s) {
+    var list = byDate(parseIso(s));
+    if (!list.length) return openForm({ date: s });
+    var d = parseIso(s);
+    openSheet(head(d.getDate() + ' ' + MESI[d.getMonth()]) + '<ul class="list">' + list.map(function (i) {
+      return '<li><button class="mail" style="width:100%;text-align:left" data-open="' + i.id + '"><div><b>' + esc(i.title) + '</b><small>' + kindLabel(i.kind) + (i.time ? ' · ' + timeLabel(i) : '') + (i.done ? ' · completato' : '') + '</small></div></button></li>';
+    }).join('') + '</ul><div class="actions-row"><button class="btn" data-newday="' + s + '">' + ico('plus') + 'Aggiungi</button></div>');
+  }
+
+  function openForm(pre) {
+    pre = pre || {};
+    openSheet(head('Aggiungi impegno') +
+      '<form id="form"><label class="f">Titolo<input type="text" id="f-title" required placeholder="Es. Consiglio di Classe 2A" value="' + esc(pre.title || '') + '"></label>' +
+      '<div class="f2"><label class="f">Data<input type="date" id="f-date" required value="' + (pre.date || iso(today)) + '"></label>' +
+      '<label class="f">Luogo / modalità<input type="text" id="f-loc" placeholder="Facoltativo" value="' + esc(pre.location || '') + '"></label></div>' +
+      '<div class="f2"><label class="f">Ora inizio<input type="time" id="f-time" value="' + (pre.time || '') + '"></label>' +
+      '<label class="f">Ora fine<input type="time" id="f-end" value="' + (pre.endTime || '') + '"></label></div>' +
+      '<label class="f">Tipo<select id="f-kind"><option value="impegno">Impegno (cella rossa)</option><option value="promemoria">Promemoria</option><option value="scadenza">Scadenza</option></select></label>' +
+      '<label class="f">Nota<input type="text" id="f-note" placeholder="Facoltativa" value="' + esc(pre.note || '') + '"></label>' +
+      '<div class="actions-row"><button class="btn primary" type="submit">Salva</button><button class="btn" type="button" data-close>Annulla</button></div></form>');
+    var form = $('form');
+    $('f-kind').value = pre.kind || 'impegno';
+    form.dataset.source = pre.source || 'Manuale';
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var it = { id: uid++, kind: $('f-kind').value, date: $('f-date').value, time: $('f-time').value, endTime: $('f-end').value, location: $('f-loc').value.trim(),
+        title: $('f-title').value.trim(), done: false, source: form.dataset.source, note: $('f-note').value.trim() };
+      if (!it.title || !it.date) return;
+      items.push(it); closeSheet(); gotoDate(it.date); renderAll(); toast('Aggiunto: ' + it.title);
+    });
+  }
+
+  /* ---------- Candidati trovati (PDF o Gmail) ---------- */
+  function isDup(e) { return items.some(function (i) { return i.title === e.title && i.date === e.date && (i.time || '') === (e.time || ''); }); }
+  function renderCandidates(box, cands, intro) {
+    var fresh = cands.filter(function (e) { return !isDup(e); });
+    var dups = cands.length - fresh.length;
+    if (!fresh.length) { box.innerHTML = '<p>' + (intro || '') + (cands.length ? 'Tutti gli impegni trovati sono già in agenda.' : 'Nessun impegno trovato.') + '</p>'; return; }
+    box.innerHTML = '<p>' + (intro || '') + fresh.length + (fresh.length === 1 ? ' impegno trovato' : ' impegni trovati') + (dups ? ' (' + dups + ' già in agenda)' : '') + ':</p>' +
+      '<ul class="list">' + fresh.map(function (e, i) {
+        var d = parseIso(e.date);
+        return '<li><label class="mail"><input type="checkbox" checked data-f="' + i + '"><div><b>' + esc(e.title) + '</b><small>' + esc(e.note || '') + '</small>' +
+          '<span class="found">' + ico('clock') + d.getDate() + ' ' + MESI[d.getMonth()] + ' ' + d.getFullYear() + ' · ' + timeLabel(e) + '</span></div></label></li>';
+      }).join('') + '</ul><div class="actions-row" style="margin-top:12px"><button class="btn primary" data-addc>Aggiungi al calendario</button></div>';
+    box.querySelector('[data-addc]').addEventListener('click', function () {
+      var n = 0, first = null;
+      box.querySelectorAll('input[data-f]:checked').forEach(function (c) {
+        var e = fresh[+c.dataset.f];
+        items.push({ id: uid++, kind: e.kind || 'impegno', date: e.date, time: e.time || '', endTime: e.endTime || '', location: e.location || '', title: e.title, done: false, source: e.source, note: e.note || '' });
+        if (!first || e.date < first) first = e.date; n++;
+      });
+      closeSheet(); if (first) gotoDate(first); renderAll(); toast(n + (n === 1 ? ' impegno aggiunto' : ' impegni aggiunti'));
+    });
+  }
+
+  /* ---------- Funzione cloud (facoltativa) ---------- */
+  function validEvent(o, src) {
+    if (!o || typeof o !== 'object' || !/^\d{4}-\d{2}-\d{2}$/.test(o.date || '') || !o.title) return null;
+    return { title: String(o.title), date: o.date, time: /^\d{2}:\d{2}$/.test(o.time || '') ? o.time : '', endTime: /^\d{2}:\d{2}$/.test(o.endTime || '') ? o.endTime : '',
+      location: o.location ? String(o.location) : '', kind: 'impegno', source: src, note: o.note ? String(o.note) : '' };
+  }
+  function callEndpoint(payload) {
+    var headers = { 'Content-Type': 'application/json' };
+    if (settings.apiKey) headers['x-api-key'] = settings.apiKey;
+    return fetch(settings.endpoint, { method: 'POST', headers: headers, body: JSON.stringify(payload) })
+      .then(function (r) { if (!r.ok) throw new Error('La funzione cloud ha risposto con errore ' + r.status); return r.json(); })
+      .then(function (j) {
+        var e = j && !j.error ? validEvent(j, payload.mode === 'pdf' ? 'Circolare' : 'Gmail') : null;
+        return { events: e ? [e] : [], reason: j && j.error ? j.error : (e ? '' : 'Risposta non valida dalla funzione cloud.') };
+      });
+  }
+  function fileToBase64(file) {
+    return new Promise(function (res, rej) {
+      var r = new FileReader();
+      r.onload = function () { res(String(r.result).split(',')[1]); };
+      r.onerror = function () { rej(new Error('Impossibile leggere il file.')); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  /* ---------- Circolari PDF ---------- */
+  function extractPdfItems(file) {
+    if (!window.pdfjsLib) return Promise.reject(new Error('Libreria PDF non caricata (serve la connessione a internet).'));
+    return file.arrayBuffer().then(function (buf) { return pdfjsLib.getDocument({ data: buf }).promise; }).then(function (pdf) {
+      var out = [], chain = Promise.resolve();
+      for (var p = 1; p <= pdf.numPages; p++) (function (p) {
+        chain = chain.then(function () { return pdf.getPage(p); }).then(function (page) { return page.getTextContent(); }).then(function (tc) {
+          tc.items.forEach(function (it) { if (it.str.trim()) out.push({ s: it.str.trim(), x: it.transform[4], y: (p - 1) * 5000 - it.transform[5] }); });
+        });
+      })(p);
+      return chain.then(function () { return out; });
+    });
+  }
+  /* ---------- Selettore classi (etichette) ---------- */
+  function normClasses(s) {
+    return String(s || '').toUpperCase().split(/[\s,;]+/).filter(function (c) { return /^[1-5][A-Z]$/.test(c); })
+      .filter(function (c, i, a) { return a.indexOf(c) === i; });
+  }
+  function classPicker(box, selected, onChange) {
+    var available = [];
+    function draw(refocus) {
+      var html = '<div class="tags">' + selected.map(function (c) {
+        return '<span class="tag">' + esc(c) + '<button type="button" data-rm="' + esc(c) + '" aria-label="Rimuovi ' + esc(c) + '">×</button></span>';
+      }).join('') + '<input type="text" class="tag-in" placeholder="' + (selected.length ? 'Aggiungi classe…' : 'Es. 5J, 3D, 2L') + '" aria-label="Aggiungi classe"></div>';
+      if (available.length) {
+        html += '<div class="avail"><small class="note">Classi presenti nella circolare (tocca per aggiungere o togliere):</small><div class="tags">' +
+          available.map(function (c) { return '<button type="button" class="tag' + (selected.indexOf(c) >= 0 ? ' on' : '') + '" data-tg="' + esc(c) + '">' + esc(c) + '</button>'; }).join('') + '</div></div>';
+      }
+      box.innerHTML = html;
+      var inp = box.querySelector('.tag-in');
+      function commit(keepFocus) {
+        var raw = inp.value.trim(); if (!raw) return;
+        var n = normClasses(raw);
+        if (!n.length) { inp.classList.add('bad'); return; }
+        n.forEach(function (c) { if (selected.indexOf(c) < 0) selected.push(c); });
+        onChange(selected); draw(keepFocus);
+      }
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ',' || e.key === ' ') { e.preventDefault(); commit(true); }
+        else if (e.key === 'Backspace' && !inp.value && selected.length) { selected.pop(); onChange(selected); draw(true); }
+      });
+      inp.addEventListener('input', function () { inp.classList.remove('bad'); });
+      inp.addEventListener('blur', function () { commit(false); });
+      if (refocus) inp.focus();
+    }
+    box.addEventListener('mousedown', function (e) { if (e.target.closest('[data-rm],[data-tg]')) e.preventDefault(); }); // evita il blur prima del clic
+    box.addEventListener('click', function (e) {
+      var rm = e.target.closest('[data-rm]'), tg = e.target.closest('[data-tg]');
+      if (rm) { selected.splice(selected.indexOf(rm.dataset.rm), 1); onChange(selected); draw(false); }
+      else if (tg) { var i = selected.indexOf(tg.dataset.tg); if (i >= 0) selected.splice(i, 1); else selected.push(tg.dataset.tg); onChange(selected); draw(false); }
+    });
+    draw(false);
+    return { setAvailable: function (a) { available = a || []; draw(false); } };
+  }
+
+  /* ---------- Circolari PDF ---------- */
+  function openPdf() {
+    openSheet(head('Carica Circolare (PDF)') +
+      '<label class="drop" id="drop"><svg class="ico"><use href="#i-doc"/></svg><span>Trascina qui il PDF o tocca per sceglierlo</span><input type="file" id="pdf-input" accept="application/pdf,.pdf"></label>' +
+      '<div id="pdf-body"></div>' + (circolari.length ? '<p class="note">Circolari caricate in questa sessione: ' + circolari.map(function (c) { return esc(c.name); }).join(', ') + '</p>' : ''));
+    var drop = $('drop'), inp = $('pdf-input');
+    inp.addEventListener('change', function () { if (inp.files[0]) showPdf(inp.files[0]); });
+    ['dragover', 'dragenter'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+    ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function () { drop.classList.remove('over'); }); });
+    drop.addEventListener('drop', function (e) { e.preventDefault(); var f = e.dataTransfer.files[0]; if (f) showPdf(f); });
+  }
+  function showPdf(file) {
+    var box = $('pdf-body');
+    if (file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) { box.innerHTML = '<p>Il file scelto non è un PDF. Scegli un file con estensione .pdf.</p>'; return; }
+    var url = URL.createObjectURL(file);
+    var name = file.name.replace(/\.pdf$/i, '');
+    circolari.push({ name: name, url: url });
+    box.innerHTML = '<div class="meta">' + ico('doc') + '<span>' + esc(file.name) + '</span><span class="chip">' + Math.max(1, Math.round(file.size / 1024)) + ' KB</span></div>' +
+      '<iframe class="preview" id="pdf-frame" title="Anteprima circolare" src="' + url + '"></iframe>' +
+      '<div class="f"><span>Classi da cercare (anche più di una)</span><div id="pdf-classes"></div></div>' +
+      '<div class="actions-row"><button class="btn primary" id="pdf-run">' + ico('sync') + 'Estrai impegni</button></div>' +
+      '<div id="pdf-result"></div>' +
+      '<div class="actions-row"><button class="btn" id="pdf-add">' + ico('plus') + 'Aggiungi impegno a mano</button><a class="btn" href="' + url + '" target="_blank" rel="noopener">Apri in una nuova scheda</a></div>' +
+      '<p class="note">' + (settings.endpoint ? 'Analisi tramite la funzione cloud configurata (una richiesta per classe).' : 'Analisi eseguita nel browser: il PDF non viene inviato a nessun server.') + '</p>';
+    var selected = settings.classes.slice();
+    var picker = classPicker($('pdf-classes'), selected, function (sel) { settings.classes = sel.slice(); saveSettings(); });
+    var cached = null;
+    var getItems = function () { return cached ? Promise.resolve(cached) : extractPdfItems(file).then(function (x) { cached = x; return x; }); };
+    getItems().then(function (its) { picker.setAvailable(AP.parseCircolare(its, []).classes); }).catch(function () {}); // elenco classi: lettura solo locale
+    $('pdf-add').addEventListener('click', function () { openForm({ title: 'Circolare: ' + name, source: 'Circolare', note: 'Allegato: ' + file.name, date: iso(addDays(1)) }); });
+    $('pdf-run').addEventListener('click', function () {
+      var cls = selected.slice(), res = $('pdf-result');
+      if (!cls.length) { res.innerHTML = '<p class="warn">Aggiungi almeno una classe (es. 5J).</p>'; return; }
+      res.innerHTML = '<p>Analisi della circolare in corso…</p>';
+      var job;
+      if (settings.endpoint) {
+        job = fileToBase64(file).then(function (b64) {
+          return Promise.all(cls.map(function (c) {
+            return callEndpoint({ mode: 'pdf', targetClass: c, filename: file.name, pdfBase64: b64 }).then(function (r) {
+              r.events.forEach(function (e) { e.cls = c; if (!/\b[1-5][A-Z]\b/.test(e.title)) e.title += ' ' + c; });
+              return { c: c, r: r };
+            });
+          }));
+        }).then(function (list) {
+          var ev = [], miss = [];
+          list.forEach(function (x) { if (x.r.events.length) ev = ev.concat(x.r.events); else miss.push(x.c); });
+          return { events: ev, missing: miss, reason: ev.length ? '' : (list[0] && list[0].r.reason) || 'Nessun impegno trovato.' };
+        });
+      } else {
+        job = getItems().then(function (its) { return AP.parseCircolare(its, cls); });
+      }
+      job.then(function (r) {
+        if (!r.events.length) { res.innerHTML = '<p class="warn">' + esc(r.reason || 'Nessun impegno trovato.') + '</p>'; return; }
+        var intro = (r.fixedYear ? 'Anno corretto in base alla data della circolare. ' : '') + (r.missing && r.missing.length ? 'Non trovate: ' + r.missing.join(', ') + '. ' : '');
+        renderCandidates(res, r.events, intro);
+      }).catch(function (err) { res.innerHTML = '<p class="warn">' + esc(err.message || err) + '</p>'; });
+    });
+  }
+
+  /* ---------- Gmail ---------- */
+  function sampleEmails() {
+    var f = function (n) { var d = addDays(n); return d.getDate() + ' ' + MESI[d.getMonth()]; };
+    return [
+      { from: 'segreteria@istituto.edu.it', subject: 'Convocazione Consiglio di Classe 3B', body: 'Si convoca il Consiglio di Classe della 3B il ' + f(5) + ' alle ore 15:00 in aula magna.' },
+      { from: 'dirigente@istituto.edu.it', subject: 'Collegio Docenti unitario', body: 'Il Collegio Docenti è convocato il ' + f(12) + ' ore 10:30. Ordine del giorno in allegato.' },
+      { from: 'newsletter@libri-scuola.it', subject: 'Offerte della settimana', body: 'Sconti sui libri di testo fino al 30%.' },
+      { from: 'vicepresidenza@istituto.edu.it', subject: 'Scrutini primo quadrimestre 2A', body: 'Gli scrutini della 2A si terranno il ' + f(19) + ' alle 14.00.' }
+    ];
+  }
+  function loadGis() {
+    return new Promise(function (res, rej) {
+      if (window.google && google.accounts && google.accounts.oauth2) return res();
+      var s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.onload = function () { res(); };
+      s.onerror = function () { rej(new Error('Impossibile caricare Google Identity Services (serve internet).')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  var gtoken = null, gexp = 0, syncing = false, autoT = null;
+  var SEEN = 'agenda-gmail-seen-v3', seen = {};
+  try { seen = JSON.parse(localStorage.getItem(SEEN) || '{}') || {}; } catch (e) {}
+  function saveSeen() { try { localStorage.setItem(SEEN, JSON.stringify(seen)); } catch (e) {} }
+  function mailKey(m) { return m.id || (m.from + '|' + m.subject); }
+  function setStatus(t) { var s = $('sync-status'); if (s) s.textContent = t; }
+  var hhmm = function () { var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+
+  /* ---------- Requisiti di sicurezza OAuth 2.0 di Google ---------- */
+  var GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly'; // privilegio minimo: sola lettura
+  var CLIENT_RE = /^[0-9]+-[a-z0-9_]+\.apps\.googleusercontent\.com$/;
+  function secureOrigin() { return location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1'; }
+  function randState() { var a = new Uint8Array(16); crypto.getRandomValues(a); return Array.prototype.map.call(a, function (x) { return ('0' + x.toString(16)).slice(-2); }).join(''); }
+  function oauthProblem() {
+    if (!secureOrigin()) return 'Google OAuth richiede una connessione https (o localhost). Apri l\'app dall\'indirizzo pubblicato, non dal file sul computer.';
+    if (!CLIENT_RE.test(settings.clientId)) return 'Il Client ID non ha il formato corretto (numeri-…apps.googleusercontent.com).';
+    return '';
+  }
+  function originBox() {
+    var o = location.origin, bad = !o || o === 'null' || location.protocol === 'file:';
+    return '<p class="note">' + (bad
+      ? '<span class="warn">Stai aprendo l\'app da un file locale: Google non può autorizzarla. Pubblicala su un indirizzo https oppure aprila da http://localhost.</span>'
+      : 'Origine di questa pagina (da registrare in Google Cloud come «Origine JavaScript autorizzata», identica, senza «/» finale): <b style="user-select:all">' + esc(o) + '</b>') + '</p>';
+  }
+  function securityPanel() {
+    var cspOn = !!document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+    var idState = !settings.clientId ? null : CLIENT_RE.test(settings.clientId);
+    var rows = [
+      [secureOrigin(), 'Connessione protetta (https o localhost)'],
+      [idState, idState === null ? 'Client ID non ancora inserito' : (idState ? 'Client ID in formato valido' : 'Client ID non valido')],
+      [true, 'Permesso minimo: solo lettura della posta (gmail.readonly), nessuna modifica né invio'],
+      [true, 'Protezione anti-CSRF: parametro «state» casuale verificato a ogni accesso'],
+      [true, 'Permessi concessi controllati prima dell\'uso (hasGrantedAllScopes)'],
+      [true, 'Token di accesso solo in memoria (mai salvato) e revocabile con «Scollega Gmail»'],
+      [cspOn, cspOn ? 'Pagina protetta da Content Security Policy (script solo da Google e cdnjs)' : 'Content Security Policy assente'],
+      [!(settings.endpoint && settings.emailToCloud), settings.endpoint && settings.emailToCloud ? 'Il testo delle email viene inviato alla funzione cloud (Gemini)' : 'Le email restano nel tuo browser: non vengono inviate a terzi']
+    ];
+    return originBox() + '<details class="secbox"><summary>' + ico('check') + ' Sicurezza OAuth 2.0 di Google</summary><ul class="sec">' + rows.map(function (r) {
+      return '<li class="' + (r[0] === null ? 'na' : r[0] ? 'ok' : 'ko') + '">' + ico(r[0] === null ? 'circle' : r[0] ? 'check' : 'x') + '<span>' + esc(r[1]) + '</span></li>';
+    }).join('') + '</ul><p class="note">Regole Google applicate: accesso tramite Google Identity Services (nessuna password nell\'app, finestra di consenso di Google), Client ID con origini autorizzate https, scope minimi, verifica di «state» e degli scope concessi, revoca del token, divieto di trasferire dati Gmail a terzi o di usarli per addestrare modelli (Limited Use). ' +
+      'Finché l\'app resta in modalità <i>Test</i> con il tuo account tra gli utenti di test non serve la verifica di Google; sarebbe obbligatoria (con valutazione di sicurezza) solo per un\'app pubblica usata da altri.</p></details>';
+  }
+
+  // prompt: '' = finestra di consenso se serve (clic dell'utente); 'none' = in silenzio (sync automatica)
+  function gmailToken(prompt) {
+    var problem = oauthProblem();
+    if (problem) return Promise.reject(new Error(problem));
+    if (gtoken && Date.now() < gexp - 60000) return Promise.resolve(gtoken);
+    return loadGis().then(function () {
+      return new Promise(function (res, rej) {
+        var state = randState();
+        google.accounts.oauth2.initTokenClient({
+          client_id: settings.clientId, scope: GMAIL_SCOPE, prompt: prompt, state: state,
+          callback: function (r) {
+            if (r.error) return rej(new Error('Accesso Google non riuscito: ' + r.error));
+            if (r.state !== state) return rej(new Error('Risposta OAuth non valida (state non corrispondente): accesso rifiutato.'));
+            if (!google.accounts.oauth2.hasGrantedAllScopes(r, GMAIL_SCOPE)) return rej(new Error('Permesso di lettura Gmail non concesso: riprova e spunta l\'accesso alle email.'));
+            gtoken = r.access_token; gexp = Date.now() + (+r.expires_in || 3600) * 1000;
+            if (!settings.linked) { settings.linked = true; saveSettings(); }
+            res(gtoken);
+          },
+          error_callback: function (e) { rej(new Error('Accesso Google annullato o bloccato (' + (e && e.type || 'errore') + ').')); }
+        }).requestAccessToken();
+      });
+    });
+  }
+  function gapi(path, tok) {
+    return fetch('https://gmail.googleapis.com/gmail/v1/users/me/' + path, { headers: { Authorization: 'Bearer ' + tok } })
+      .then(function (r) {
+        if (r.status === 401) { gtoken = null; throw new Error('Sessione Gmail scaduta: riconnetti.'); }
+        if (!r.ok) throw new Error('Gmail ha risposto con errore ' + r.status);
+        return r.json();
+      });
+  }
+  function b64d(s) {
+    s = s.replace(/-/g, '+').replace(/_/g, '/');
+    try { return decodeURIComponent(escape(atob(s))); } catch (e) { try { return atob(s); } catch (e2) { return ''; } }
+  }
+  function htmlToText(html) {
+    try {
+      var doc = new DOMParser().parseFromString(String(html).replace(/<(br|\/p|\/div|\/li|\/tr|\/h\d)\b[^>]*>/gi, '$&\n'), 'text/html');
+      doc.querySelectorAll('style,script').forEach(function (n) { n.remove(); });
+      return doc.body ? doc.body.textContent : '';
+    } catch (e) { return String(html).replace(/<[^>]+>/g, ' '); }
+  }
+  function toMail(m) {
+    var h = {}; ((m.payload && m.payload.headers) || []).forEach(function (x) { h[x.name.toLowerCase()] = x.value; });
+    var plain = '', html = '';
+    (function walk(p) {
+      if (!p) return;
+      if (p.mimeType === 'text/plain' && p.body && p.body.data) plain += b64d(p.body.data) + '\n';
+      else if (p.mimeType === 'text/html' && p.body && p.body.data) html += b64d(p.body.data) + '\n';
+      (p.parts || []).forEach(walk);
+    })(m.payload);
+    if (m.payload && !m.payload.parts && m.payload.body && m.payload.body.data && !plain && !html) plain = b64d(m.payload.body.data);
+    var body = (plain.trim() ? plain : htmlToText(html)).replace(/[ \t ]+/g, ' ').replace(/ ?\n ?/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+    if (!body) body = String(m.snippet || '').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&'); // ultima risorsa: anteprima di Gmail
+    return { id: m.id, from: h.from || '', subject: h.subject || '', body: body.slice(0, 6000), received: m.internalDate ? new Date(+m.internalDate) : null };
+  }
+  // «oggi» = lo stesso giorno evidenziato nel calendario, ricalcolato a ogni sincronizzazione
+  function todayMidnight() { var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+  function gmailQuery() {
+    var base = 'after:' + Math.floor(todayMidnight().getTime() / 1000) + ' in:inbox -category:promotions -category:social -category:forums -category:updates';
+    var cl = (settings.classes || []).filter(function (c) { return /^[1-5][A-Z]$/.test(c); });
+    return settings.scope === 'mine' && cl.length ? base + ' (' + cl.join(' OR ') + ')' : base;
+  }
+  // legge solo le email non ancora elaborate (la lista di Gmail dà gli id, poi si scaricano solo quelle nuove)
+  function fetchGmail(tok) {
+    return gapi('messages?maxResults=40&q=' + encodeURIComponent(gmailQuery()), tok).then(function (l) {
+      var ids = (l.messages || []).map(function (m) { return m.id; }), fresh = ids.filter(function (id) { return !seen[id]; });
+      var t0 = todayMidnight();
+      return Promise.all(fresh.map(function (id) { return gapi('messages/' + id + '?format=full', tok).then(toMail); }))
+        .then(function (mails) { // doppio controllo: mai email ricevute prima di oggi
+          return { mails: mails.filter(function (m) { return !m.received || m.received >= t0; }), total: ids.length };
+        });
+    });
+  }
+  function otherClassesOnly(m) {
+    var f = AP.findClasses(m.subject + ' ' + m.body);
+    return f.length > 0 && settings.classes.length > 0 && !f.some(function (c) { return settings.classes.indexOf(c) >= 0; });
+  }
+  function analyzeMails(mails, demo) {
+    var opts = { classes: settings.classes, onlyMine: settings.onlyMine && !demo, minDate: demo ? null : todayMidnight() };
+    return Promise.all(mails.map(function (m) {
+      var done = function (e, ok, reason) { if (e) e.note = e.note || ('Da: ' + m.from + ' · ' + m.subject); return { m: m, e: e, ok: ok, reason: reason || '' }; };
+      if (settings.endpoint && settings.emailToCloud) { // le email lasciano il browser solo se l'utente lo ha scelto
+        return callEndpoint({ mode: 'email', from: m.from, subject: m.subject, body: m.body }).then(function (r) {
+          var e = r.events[0] || null;
+          if (e && opts.onlyMine && otherClassesOnly(m)) return done(null, true, 'cita solo altre classi: non è tra le tue');
+          return done(e, true, e ? '' : (r.reason || 'nessun impegno riconosciuto'));
+        }, function () { return done(null, false, 'errore della funzione cloud'); });
+      }
+      var a = AP.analyzeEmail(m, todayMidnight(), opts);
+      return Promise.resolve(done(a.event, true, a.reason));
+    }));
+  }
+
+  // manual=true: clic dell'utente (può aprire la finestra Google). manual=false: sync automatica in silenzio.
+  function syncGmail(manual) {
+    if (syncing) return Promise.resolve(null);
+    syncing = true;
+    var demo = !settings.clientId;
+    var get = demo ? Promise.resolve({ mails: sampleEmails(), total: sampleEmails().length }) : gmailToken(manual ? '' : 'none').then(fetchGmail);
+    return get.then(function (got) {
+      var mails = got.mails, fresh = mails;
+      return analyzeMails(fresh, demo).then(function (res) {
+        var auto = !demo && settings.autoAdd, cloud = !!(settings.endpoint && settings.emailToCloud);
+        var added = [], pending = [], log = [];
+        res.forEach(function (r) {
+          var en = { subject: r.m.subject || '(senza oggetto)', status: '', preview: String(r.m.body || '').replace(/\s+/g, ' ').slice(0, 160) }, key = mailKey(r.m);
+          log.push(en);
+          if (!r.e) { en.status = 'non aggiunta: ' + r.reason; if (auto && r.ok) seen[key] = 1; return; }
+          if (isDup(r.e)) { en.status = 'già in agenda'; if (auto) seen[key] = 1; return; }
+          if (auto) {
+            var e = r.e, it = { id: uid++, kind: 'impegno', date: e.date, time: e.time || '', endTime: e.endTime || '', location: e.location || '', title: e.title, done: false, source: 'Gmail', note: e.note || '' };
+            items.push(it); added.push(it); seen[key] = 1; en.status = 'aggiunta in agenda';
+          } else { pending.push(r.e); en.status = 'da confermare'; }
+        });
+        saveSeen();
+        if (added.length) {
+          renderAll();
+          gotoDate(added.map(function (a) { return a.date; }).sort()[0]);
+          toast(added.length + (added.length === 1 ? ' impegno aggiunto da Gmail' : ' impegni aggiunti da Gmail'));
+        }
+        setStatus('Ultima sync: ' + hhmm());
+        return { total: got.total, fresh: fresh.length, added: added, pending: pending, log: log, demo: demo, auto: auto };
+      });
+    }).then(function (r) { syncing = false; return r; }, function (err) { syncing = false; setStatus('Tocca per riconnettere'); throw err; });
+  }
+  function startAuto() {
+    clearInterval(autoT); autoT = null;
+    if (!settings.clientId || !settings.linked || !settings.autoAdd) return;
+    var run = function () { syncGmail(false).catch(function () {}); };
+    setTimeout(run, 1500);
+    autoT = setInterval(run, 10 * 60 * 1000);
+  }
+
+  function testerHtml() {
+    return '<details class="secbox"><summary>' + ico('mail') + ' Prova l\'estrazione su un testo</summary>' +
+      '<p class="note">Incolla oggetto e testo di una email per vedere cosa ne ricava l\'app (e aggiungerla se vuoi).</p>' +
+      '<div style="display:grid;gap:8px"><input type="text" id="g-test-subj" placeholder="Oggetto (facoltativo)">' +
+      '<textarea id="g-test-body" placeholder="Testo dell\'email"></textarea>' +
+      '<div class="actions-row"><button class="btn" type="button" id="g-test-run">Estrai</button></div><div id="g-test-out"></div></div></details>';
+  }
+  function wireTester() {
+    var run = $('g-test-run'); if (!run) return;
+    run.addEventListener('click', function () {
+      var out = $('g-test-out');
+      var r = AP.analyzeEmail({ from: 'testo incollato', subject: $('g-test-subj').value, body: $('g-test-body').value, received: new Date() }, today, { classes: settings.classes, onlyMine: false });
+      if (!r.event) { out.innerHTML = '<p class="warn">Non riconosciuto: ' + esc(r.reason) + '.</p>'; return; }
+      var e = r.event, d = parseIso(e.date);
+      out.innerHTML = '<ul class="sec"><li class="ok">' + ico('check') + '<span><b>Impegno:</b> ' + esc(e.title) + '</span></li>' +
+        '<li class="ok">' + ico('check') + '<span><b>Data:</b> ' + d.getDate() + ' ' + MESI[d.getMonth()] + ' ' + d.getFullYear() + '</span></li>' +
+        '<li class="' + (e.time ? 'ok' : 'na') + '">' + ico(e.time ? 'check' : 'circle') + '<span><b>Orario:</b> ' + esc(e.time ? timeLabel(e) : 'non trovato (impegno di tutto il giorno)') + '</span></li>' +
+        (e.location ? '<li class="ok">' + ico('check') + '<span><b>Luogo:</b> ' + esc(e.location) + '</span></li>' : '') + '</ul>' +
+        '<div class="actions-row"><button class="btn primary" type="button" id="g-test-add">Aggiungi in agenda</button></div>';
+      $('g-test-add').addEventListener('click', function () {
+        if (isDup(e)) { toast('Già in agenda'); return; }
+        items.push({ id: uid++, kind: 'impegno', date: e.date, time: e.time || '', endTime: e.endTime || '', location: e.location || '', title: e.title, done: false, source: 'Gmail', note: 'Testo incollato' });
+        closeSheet(); gotoDate(e.date); renderAll(); toast('Aggiunto: ' + e.title);
+      });
+    });
+  }
+
+  function openGmail() {
+    var demo = !settings.clientId;
+    openSheet(head('Sync Gmail') +
+      '<p>Legge il <b>testo</b> delle email recenti della posta in arrivo (qualunque sia l\'oggetto): se vi trova una <b>data</b>, un <b>orario</b> o una <b>classe</b>, crea l\'impegno e lo aggiunge in agenda.</p>' +
+      '<div id="g-body"></div>');
+    var b = $('g-body');
+    if (demo) {
+      b.innerHTML = '<p class="warn">' + (DEV ? 'Gmail non è ancora collegato: manca il Google OAuth Client ID.' : 'La sincronizzazione Gmail non è ancora disponibile in questa versione.') + '</p>' +
+        '<div class="actions-row">' + (DEV ? '<button class="btn primary" id="g-set">' + ico('gear') + 'Apri Impostazioni</button>' : '') + '<button class="btn" id="g-go">Prova con email di esempio</button></div>' +
+        '<p class="note" style="margin-top:12px">' + (DEV ? 'Nelle impostazioni incolla il Client ID (guida nel README). ' : '') + 'In modalità prova le email sono esempi e non vengono aggiunte da sole.</p>' + testerHtml() + (DEV ? securityPanel() : '');
+      if ($('g-set')) $('g-set').addEventListener('click', function () { closeSheet(); openSettings(); });
+    } else {
+      b.innerHTML = '<div class="actions-row"><span class="chip">' + (gtoken ? 'Collegato' : (settings.linked ? 'Collegato in precedenza' : 'Non collegato')) + '</span>' +
+        '<span class="chip">Classi: ' + esc(settings.classes.join(', ') || 'tutte') + '</span></div>' +
+        '<label class="chk"><input type="checkbox" id="g-auto"' + (settings.autoAdd ? ' checked' : '') + '> Aggiungi automaticamente in agenda (e ricontrolla ogni 10 minuti mentre la pagina è aperta)</label>' +
+        '<div class="actions-row"><button class="btn primary" id="g-go">' + ico('mail') + (settings.linked ? 'Sincronizza ora' : 'Collega Gmail e sincronizza') + '</button></div>' +
+        '<p class="note">Accesso in sola lettura (gmail.readonly) dal tuo browser. Ricerca: posta in arrivo ricevuta da oggi in avanti, escluse le schede Promozioni, Social, Aggiornamenti e Forum, Spam e Cestino.</p>' + testerHtml() + (DEV ? securityPanel() : '');
+      $('g-auto').addEventListener('change', function () { settings.autoAdd = this.checked; saveSettings(); startAuto(); });
+    }
+    wireTester();
+    function logHtml(r) {
+      if (!r.log.length) return '';
+      var shown = r.log.slice().sort(function (a, b) { return /^(aggiunta|da confermare)/.test(b.status) - /^(aggiunta|da confermare)/.test(a.status); }).slice(0, 30);
+      return '<details class="secbox" open><summary>Dettaglio email lette (' + r.log.length + ')</summary><ul class="sec">' + shown.map(function (l) {
+        var ok = /^(aggiunta|da confermare|già)/.test(l.status);
+        return '<li class="' + (ok ? 'ok' : 'ko') + '">' + ico(ok ? 'check' : 'x') + '<span><b>' + esc(l.subject) + '</b><br><small>' + esc(l.status) + '</small>' + (ok ? '' : '<br><small>Testo letto: «' + esc(l.preview || '(vuoto)') + '»</small>') + '</span></li>';
+      }).join('') + '</ul></details>';
+    }
+    function runScan() {
+      $('g-body').innerHTML = '<p>Scansione della posta in corso…</p><div class="bar"><i style="width:60%"></i></div>';
+      syncGmail(true).then(function (r) {
+        var bb = $('g-body'); if (!bb || !r) return;
+        var head1 = '<p>' + r.fresh + (r.fresh === 1 ? ' messaggio nuovo letto' : ' messaggi nuovi letti') + ' su ' + r.total + ' trovati dalla ricerca.</p>';
+        var after = function () {
+          var rs = $('g-rescan'); if (rs) rs.addEventListener('click', function () { seen = {}; saveSeen(); runScan(); });
+        };
+        if (r.pending.length) { renderCandidates(bb, r.pending, head1); bb.insertAdjacentHTML('beforeend', logHtml(r)); return; }
+        bb.innerHTML = head1 +
+          (r.total === 0 ? '<p class="warn">Nessuna email ricevuta da oggi in avanti nella posta in arrivo (le schede Promozioni, Social, Aggiornamenti e Forum, lo Spam e il Cestino sono escluse).</p>' : '') +
+          (r.added.length ? '<p><b>Aggiunti in agenda:</b></p><ul class="list">' + r.added.map(function (a) {
+            var d = parseIso(a.date);
+            return '<li class="mail"><div><b>' + esc(a.title) + '</b><span class="found">' + ico('clock') + d.getDate() + ' ' + MESI[d.getMonth()] + ' ' + d.getFullYear() + (a.time ? ' · ' + timeLabel(a) : '') + '</span></div></li>';
+          }).join('') + '</ul>' : '<p>Nessun nuovo impegno aggiunto.</p>') +
+          logHtml(r) +
+          '<div class="actions-row">' + (r.total > r.fresh ? '<button class="btn" id="g-rescan">Rianalizza anche le email già lette</button>' : '') + '<button class="btn" data-close>Chiudi</button></div>';
+        after(); startAuto();
+      }).catch(function (err) { var bb = $('g-body'); if (bb) bb.innerHTML = '<p class="warn">' + esc(err.message || err) + '</p><div class="actions-row"><button class="btn" data-close>Chiudi</button></div>'; });
+    }
+    $('g-go').addEventListener('click', runScan);
+  }
+
+  /* ---------- Impostazioni ---------- */
+  function openSettings() {
+    openSheet(head('Impostazioni') +
+      '<form id="set-form">' +
+      '<div class="f"><span>Le mie classi (usate per circolari ed email)</span><div id="s-classes"></div></div>' +
+      '<label class="f">Quali email leggere<select id="s-scope"><option value="any"' + (settings.scope !== 'mine' ? ' selected' : '') + '>Tutte le recenti: cerca data, orario o classe nel testo</option><option value="mine"' + (settings.scope === 'mine' ? ' selected' : '') + '>Solo quelle che citano le mie classi</option></select></label>' +
+      (DEV ? '<label class="f">Google OAuth Client ID (per Gmail)<input type="text" id="s-client" placeholder="xxxx.apps.googleusercontent.com" value="' + esc(settings.clientId) + '"></label>' : '') +
+      '<label class="chk"><input type="checkbox" id="s-auto"' + (settings.autoAdd ? ' checked' : '') + '> Aggiungi automaticamente le email trovate</label>' +
+      '<label class="chk"><input type="checkbox" id="s-mine"' + (settings.onlyMine ? ' checked' : '') + '> Ignora le email che citano solo altre classi</label>' +
+      (DEV ? '<label class="f">URL funzione cloud (facoltativo, solo https)<input type="text" id="s-endpoint" placeholder="https://…cloudfunctions.net/extractEvent" value="' + esc(settings.endpoint) + '"></label>' +
+      '<label class="f">Chiave API della funzione (facoltativa)<input type="text" id="s-key" value="' + esc(settings.apiKey) + '"></label>' +
+      '<label class="chk"><input type="checkbox" id="s-e2c"' + (settings.emailToCloud ? ' checked' : '') + '> Invia anche il testo delle email alla funzione cloud (di default restano nel browser)</label>' : '') +
+      '<p class="note">Le impostazioni restano solo in questo browser.' + (DEV ? ' Modalità sviluppatore attiva (apri l\'app con #dev per uscire).' : '') + '</p>' + (DEV ? securityPanel() : '') +
+      '<div class="actions-row"><button class="btn primary" type="submit">Salva</button><button class="btn" type="button" data-close>Annulla</button>' +
+      (settings.linked ? '<button class="btn" type="button" id="s-unlink">Scollega Gmail</button>' : '') +
+      '<button class="btn" type="button" id="s-past">Elimina impegni Gmail passati</button>' +
+      '<button class="btn danger" type="button" id="s-reset">Svuota agenda</button></div></form>');
+    var sel = settings.classes.slice();
+    classPicker($('s-classes'), sel, function () {});
+    $('set-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var inp = $('s-classes').querySelector('.tag-in');
+      if (inp && inp.value.trim()) normClasses(inp.value).forEach(function (c) { if (sel.indexOf(c) < 0) sel.push(c); });
+      var newId = DEV ? $('s-client').value.trim() : settings.clientId;
+      if (newId !== settings.clientId) { settings.linked = false; gtoken = null; }
+      var changed = JSON.stringify(sel) !== JSON.stringify(settings.classes) || $('s-scope').value !== settings.scope || $('s-mine').checked !== settings.onlyMine;
+      settings.classes = sel.slice(); settings.clientId = newId; settings.scope = $('s-scope').value;
+      if (changed) { seen = {}; saveSeen(); } // con nuove regole le email vanno riesaminate
+      settings.autoAdd = $('s-auto').checked; settings.onlyMine = $('s-mine').checked;
+      var ep = DEV ? $('s-endpoint').value.trim() : settings.endpoint;
+      if (ep && !/^https:\/\//i.test(ep)) { toast('L\'URL della funzione cloud deve iniziare con https://'); return; }
+      if (newId && !CLIENT_RE.test(newId)) { toast('Client ID non valido: deve finire con .apps.googleusercontent.com'); return; }
+      if (DEV) { settings.endpoint = ep; settings.apiKey = $('s-key').value.trim(); settings.emailToCloud = $('s-e2c').checked; }
+      saveSettings(); closeSheet(); startAuto(); toast('Impostazioni salvate');
+    });
+    var un = $('s-unlink');
+    if (un) un.addEventListener('click', function () {
+      try { if (gtoken && window.google) google.accounts.oauth2.revoke(gtoken, function () {}); } catch (e) {}
+      gtoken = null; settings.linked = false; saveSettings(); startAuto(); setStatus('Mai sincronizzato'); closeSheet(); toast('Gmail scollegato');
+    });
+    $('s-past').addEventListener('click', function () {
+      var t0 = iso(todayMidnight()), n = items.length;
+      items = items.filter(function (x) { return !(x.source === 'Gmail' && x.date < t0); });
+      closeSheet(); renderAll(); toast((n - items.length) + ' impegni Gmail passati eliminati');
+    });
+    $('s-reset').addEventListener('click', function () {
+      if (!confirm('Eliminare tutti gli impegni salvati in questo browser?')) return;
+      items = []; seen = {}; saveSeen(); closeSheet(); renderAll(); toast('Agenda svuotata');
+    });
+  }
+
+  /* ---------- Pop-up promemoria ---------- */
+  var popItem = null, snoozeT;
+  function nextImpegno() {
+    return items.filter(function (i) { return i.kind === 'impegno' && !i.done && parseIso(i.date) >= today; })
+      .sort(function (a, b) { return (a.date + a.time).localeCompare(b.date + b.time); })[0];
+  }
+  function showPopup() {
+    popItem = nextImpegno(); if (!popItem) return;
+    $('pop-text').textContent = popItem.title + ' · ' + rel(popItem.date) + (popItem.time ? ' ore ' + popItem.time : '');
+    $('popup').hidden = false;
+  }
+
+  /* ---------- Eventi ---------- */
+  $('cal').addEventListener('click', function (e) { var c = e.target.closest('.cell'); if (c) { var s = c.dataset.date; if (c.classList.contains('out')) gotoDate(s); openDay(s); } });
+  function pillClick(e) { var p = e.target.closest('.pill[data-id]'); if (p) openDetail(+p.dataset.id); }
+  $('pills-rem').addEventListener('click', pillClick); $('pills-due').addEventListener('click', pillClick);
+  $('prev').addEventListener('click', function () { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); renderCal(); });
+  $('next').addEventListener('click', function () { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); renderCal(); });
+  $('today-btn').addEventListener('click', function () { view = new Date(today.getFullYear(), today.getMonth(), 1); renderCal(); });
+  $('btn-add').addEventListener('click', function () { openForm(); });
+  $('btn-pdf').addEventListener('click', openPdf);
+  $('btn-gmail').addEventListener('click', openGmail);
+  $('btn-settings').addEventListener('click', openSettings);
+  $('close').addEventListener('click', function () { $('modal').hidden = true; $('reopen').hidden = false; $('reopen').focus(); });
+  $('reopen').addEventListener('click', function () { $('modal').hidden = false; $('reopen').hidden = true; });
+  $('pop-snooze').addEventListener('click', function () { $('popup').hidden = true; toast('Promemoria posticipato di 10 minuti'); clearTimeout(snoozeT); snoozeT = setTimeout(showPopup, 10 * 60 * 1000); });
+  $('pop-view').addEventListener('click', function () { $('popup').hidden = true; if (popItem) { gotoDate(popItem.date); openDetail(popItem.id); } });
+
+  $('overlay').addEventListener('click', function (e) {
+    var t = e.target;
+    if (t === $('overlay') || t.closest('[data-close]')) return closeSheet();
+    var b;
+    if ((b = t.closest('[data-toggle]'))) { var it = items.find(function (i) { return i.id === +b.dataset.toggle; }); it.done = !it.done; closeSheet(); renderAll(); toast(it.done ? 'Segnato come completato' : 'Riaperto'); }
+    else if ((b = t.closest('[data-del]'))) { var id = +b.dataset.del; items = items.filter(function (i) { return i.id !== id; }); closeSheet(); renderAll(); toast('Voce eliminata'); }
+    else if ((b = t.closest('[data-open]'))) openDetail(+b.dataset.open);
+    else if ((b = t.closest('[data-newday]'))) openForm({ date: b.dataset.newday });
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('overlay').hidden) closeSheet(); });
+
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  /* ---------- Tema e PWA ---------- */
+  var THEME_KEY = 'agenda-theme';
+  function sysTheme() { return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+  function curTheme() { return document.documentElement.getAttribute('data-theme') || sysTheme(); }
+  function paintTheme() {
+    var t = curTheme(), m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', t === 'dark' ? '#0b1116' : '#e6edf0');
+    var l = $('theme-label'); if (l) l.textContent = t === 'dark' ? 'Passa al tema chiaro' : 'Passa al tema scuro';
+    var u = document.querySelector('#btn-theme use'); if (u) u.setAttribute('href', t === 'dark' ? '#i-sun' : '#i-moon');
+  }
+  try { var savedTheme = localStorage.getItem(THEME_KEY); if (savedTheme === 'dark' || savedTheme === 'light') document.documentElement.setAttribute('data-theme', savedTheme); } catch (e) {}
+  paintTheme();
+  $('btn-theme').addEventListener('click', function () {
+    var n = curTheme() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', n);
+    try { localStorage.setItem(THEME_KEY, n); } catch (e) {}
+    paintTheme();
+  });
+  if (window.matchMedia) { try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paintTheme); } catch (e) {} }
+
+  // Installazione come app (Android/Chrome/Edge: richiesta nativa; iPhone/iPad: istruzioni)
+  var installEvt = null, ib = $('btn-install');
+  var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIOS && !standalone) ib.hidden = false;
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvt = e; if (!standalone) ib.hidden = false; });
+  window.addEventListener('appinstalled', function () { ib.hidden = true; installEvt = null; toast('App installata'); });
+  ib.addEventListener('click', function () {
+    if (installEvt) { installEvt.prompt(); installEvt = null; ib.hidden = true; return; }
+    openSheet(head('Installa l\'app') +
+      '<p><b>iPhone / iPad (Safari):</b> tocca il pulsante <b>Condividi</b> (quadrato con la freccia), poi <b>Aggiungi alla schermata Home</b>.</p>' +
+      '<p><b>Android (Chrome):</b> menu ⋮ → <b>Installa app</b> (o Aggiungi a schermata Home).</p>' +
+      '<p><b>Computer (Chrome / Edge):</b> icona di installazione nella barra dell\'indirizzo.</p>');
+  });
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+  /* ---------- fine Tema e PWA ---------- */
+  renderAll();
+  setTimeout(showPopup, 900);
+  startAuto();
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,32 @@
+{
+  "name": "Agenda Scolastica",
+  "short_name": "Agenda",
+  "description": "Calendario scolastico con impegni da circolari PDF ed email.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#1f7a4d",
+  "background_color": "#e6edf0",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
