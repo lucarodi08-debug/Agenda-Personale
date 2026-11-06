@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-hDkjc0j/g+AQEBL6UnVo4XhpvapfdlvP5bgAAgJ1qmE=' 'sha256-QJTdeXzr2jn/6vZNvMokKea3viaEaHRLONk84CSuTnQ=' https://accounts.google.com/gsi/client https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://accounts.google.com/gsi/style https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://gmail.googleapis.com https://accounts.google.com/gsi/ https://cdnjs.cloudflare.com https://*.cloudfunctions.net https://*.run.app; frame-src blob: https://accounts.google.com/gsi/; object-src blob:; worker-src 'self' blob: https://cdnjs.cloudflare.com; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-hDkjc0j/g+AQEBL6UnVo4XhpvapfdlvP5bgAAgJ1qmE=' 'sha256-T5Jn/NS79UlrinMFj5rE5Ylm9c+r66LW99qvjkrogNo=' https://accounts.google.com/gsi/client https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://accounts.google.com/gsi/style https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://gmail.googleapis.com https://accounts.google.com/gsi/ https://cdnjs.cloudflare.com https://*.cloudfunctions.net https://*.run.app; frame-src blob: https://accounts.google.com/gsi/; object-src blob:; worker-src 'self' blob: https://cdnjs.cloudflare.com; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#e6edf0">
@@ -291,6 +291,57 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
 @keyframes bgB { to { transform: translate3d(-38vmax, 18vmax, 0) scale(.9); } }
 @keyframes bgC { to { transform: translate3d(30vmax, -26vmax, 0) scale(1.2); } }
 .bg-pause .bg i { animation-play-state: paused; }
+
+/* ---------- Telefono: schermo fisso, niente scorrimento della pagina ---------- */
+input[type="number"] { font: inherit; font-weight: 500; color: var(--ink); background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 12px; width: 100%; min-width: 0; }
+@media (max-width: 640px) {
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  body { display: block; padding: 0; min-height: 0; }
+  .modal { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 0; box-shadow: none;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-left, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-right, 0px));
+    display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  .close { display: none; }
+  .head { padding: 0; margin: 0; gap: 4px; flex: none; }
+  .head .row { display: grid; grid-template-columns: 1fr; gap: 2px; }
+  .head .label { font-size: 11px; letter-spacing: .08em; }
+  .pills { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .pills::-webkit-scrollbar { display: none; }
+  .pill { flex: 0 0 auto; min-width: 84px; max-width: 70%; height: 32px; padding: 0 12px; font-size: 13px; }
+  .body { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+  .body > section { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+  .cal-bar { margin-bottom: 4px; flex: none; }
+  .cal-bar h2 { font-size: 18px; }
+  .nav { height: 32px; }
+  .cal { flex: 1 1 auto; min-height: 0; grid-template-rows: auto; grid-auto-rows: minmax(0, 1fr); gap: 3px; }
+  .dow { padding: 2px 0; font-size: 11px; }
+  .cell { min-height: 0; padding: 4px 4px; justify-content: space-between; }
+  .num { font-size: 14px; }
+  /* barra azioni in basso, sempre visibile */
+  .side { flex: none; padding: 0; gap: 6px; flex-direction: column; align-items: stretch; }
+  .legend { display: flex; flex-direction: row; justify-content: center; gap: 14px; }
+  .legend li { font-size: 11px; gap: 6px; }
+  .sw { width: 14px; height: 14px; border-width: 1.5px; }
+  .actions { display: flex; flex-direction: row; justify-content: space-between; align-items: stretch; gap: 2px;
+    border-top: 1.5px solid var(--border); padding-top: 6px; }
+  .tile, .sync { flex: 1 1 0; width: auto; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 2px;
+    border: 0; border-radius: 12px; background: transparent; padding: 4px 2px; font-size: 10px; }
+  .tile-box { width: 44px; height: 44px; aspect-ratio: auto; border-radius: 14px; font-size: 24px; border-width: 2px; }
+  .tile-add .tile-box { font-size: 26px; }
+  .tile-doc .tile-box { font-size: 22px; }
+  .tile-add .ico { stroke-width: 2.6; }
+  .tile-name { font-size: 10px; font-weight: 600; }
+  .sync { font-size: 10px; }
+  .sync .ico { font-size: 22px; margin: 11px 0 0; }
+  .sync > span { font-size: 10px; font-weight: 600; text-align: center; line-height: 1.15; }
+  .sync small { display: none; }
+  .sync:hover { background: transparent; }
+  .popup { top: calc(6px + env(safe-area-inset-top, 0px)); }
+  .overlay { padding: 8px; }
+  .sheet .f2 { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sheet { padding: 18px; max-height: calc(100% - 8px); border-radius: 20px; }
+  .toast { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-width: 640px) and (max-height: 620px) { .legend { display: none; } .head .label { display: none; } }
 .cell.today .tag-today { background: #14202b; color: #ffffff; }
 .cell.today { color: var(--c-today-ink, var(--c-normal-ink)); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --c-today-ink: #14202b; } }
@@ -878,7 +929,7 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
     var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && saved.length) { items = saved; uid = Math.max.apply(null, items.map(function (i) { return i.id; })) + 1; }
   } catch (e) {}
-  var settings = { classes: ['5J'], endpoint: '', apiKey: '', clientId: '', autoAdd: true, onlyMine: true, linked: false, emailToCloud: false, keyword: 'scuola', scope: 'any' };
+  var settings = { classes: ['5J'], endpoint: '', apiKey: '', clientId: '', autoAdd: true, onlyMine: true, linked: false, emailToCloud: false, keyword: 'scuola', scope: 'any', notify: false, leadMin: 15 };
   try {
     var st = JSON.parse(localStorage.getItem(SKEY) || 'null');
     if (st) {
@@ -910,8 +961,8 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
   setTimeout(devUnlock, 700); window.addEventListener('hashchange', devUnlock);
   // animazioni dello sfondo in pausa quando la scheda non è visibile (risparmio batteria)
   document.addEventListener('visibilitychange', function () { document.documentElement.classList.toggle('bg-pause', document.hidden); });
-  function persist() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) {} }
-  function saveSettings() { try { localStorage.setItem(SKEY, JSON.stringify(settings)); } catch (e) {} }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) {} if (window.agendaMirror) window.agendaMirror(); }
+  function saveSettings() { try { localStorage.setItem(SKEY, JSON.stringify(settings)); } catch (e) {} if (window.agendaMirror) window.agendaMirror(); }
 
   var view = new Date(today.getFullYear(), today.getMonth(), 1);
   var circolari = [];
@@ -993,8 +1044,11 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
       '<p>' + d.getDate() + ' ' + MESI[d.getMonth()] + ' ' + d.getFullYear() + (it.time ? ' · ore ' + timeLabel(it) : '') + '</p>' +
       (it.location ? '<p>' + esc(it.location) + '</p>' : '') +
       (it.note ? '<p>' + esc(it.note) + '</p>' : '') +
+      (it.series ? '<p>' + ico('sync') + ' Impegno periodico: ' + items.filter(function (x) { return x.series === it.series; }).length + ' ripetizioni in agenda.</p>' : '') +
       '<div class="actions-row"><button class="btn primary" data-toggle="' + id + '">' + ico('check') + (it.done ? 'Riapri' : 'Segna completato') + '</button>' +
-      '<button class="btn danger" data-del="' + id + '">Elimina</button></div>');
+      '<button class="btn" data-ics="' + id + '">' + ico('cal') + 'Aggiungi al calendario del telefono</button></div>' +
+      '<div class="actions-row"><button class="btn danger" data-del="' + id + '">' + (it.series ? 'Elimina solo questo' : 'Elimina') + '</button>' +
+      (it.series ? '<button class="btn danger" data-delnext="' + id + '">Elimina questo e i successivi</button><button class="btn danger" data-delseries="' + id + '">Elimina tutta la serie</button>' : '') + '</div>');
   }
 
   function openDay(s) {
@@ -1006,6 +1060,46 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
     }).join('') + '</ul><div class="actions-row"><button class="btn" data-newday="' + s + '">' + ico('plus') + 'Aggiungi</button></div>');
   }
 
+  // date di un impegno periodico: ogni mese (stesso giorno, o ultimo del mese se manca) o ogni 1-2 settimane, per N mesi
+  function addMonthsClamp(d, k) {
+    var last = new Date(d.getFullYear(), d.getMonth() + k + 1, 0).getDate();
+    return new Date(d.getFullYear(), d.getMonth() + k, Math.min(d.getDate(), last));
+  }
+  function seriesDates(startIso, rep, months) {
+    var s = parseIso(startIso), out = [], k;
+    if (rep === 'm') { for (k = 0; k < months; k++) out.push(addMonthsClamp(s, k)); }
+    else { var step = rep === 'w2' ? 14 : 7, end = addMonthsClamp(s, months), d = new Date(s); while (d < end && out.length < 160) { out.push(new Date(d)); d.setDate(d.getDate() + step); } }
+    return out;
+  }
+  // esportazione .ics: il calendario del telefono mostra le notifiche anche ad app chiusa
+  function icsEsc(s) { return String(s || '').replace(/\\/g, '\\\\').replace(/([,;])/g, '\\$1').replace(/\r?\n/g, '\\n'); }
+  function icsText(list) {
+    var L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Agenda Scolastica//IT', 'CALSCALE:GREGORIAN'], now = new Date();
+    var stamp = now.getUTCFullYear() + pad(now.getUTCMonth() + 1) + pad(now.getUTCDate()) + 'T' + pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds()) + 'Z';
+    var ymd = function (d) { return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()); };
+    var lead = Math.max(0, +settings.leadMin || 0);
+    list.forEach(function (i) {
+      var d = parseIso(i.date), nx = new Date(d); nx.setDate(nx.getDate() + 1);
+      L.push('BEGIN:VEVENT', 'UID:agenda-' + i.id + '-' + i.date + '@agenda-scolastica', 'DTSTAMP:' + stamp, 'SUMMARY:' + icsEsc(i.title));
+      if (i.time) {
+        var st = i.time.replace(':', ''), en = (i.endTime || '').replace(':', '');
+        if (!en) { var p = i.time.split(':'); en = pad((+p[0] + 1) % 24) + p[1]; }
+        L.push('DTSTART:' + ymd(d) + 'T' + st + '00', 'DTEND:' + ymd(d) + 'T' + en + '00');
+      } else L.push('DTSTART;VALUE=DATE:' + ymd(d), 'DTEND;VALUE=DATE:' + ymd(nx));
+      if (i.location) L.push('LOCATION:' + icsEsc(i.location));
+      if (i.note) L.push('DESCRIPTION:' + icsEsc(i.note));
+      L.push('BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsEsc(i.title), i.time ? 'TRIGGER:-PT' + lead + 'M' : 'TRIGGER:PT8H', 'END:VALARM', 'END:VEVENT');
+    });
+    L.push('END:VCALENDAR');
+    return L.join('\r\n');
+  }
+  function downloadIcs(list, name) {
+    if (!list.length) { toast('Nessun impegno da esportare'); return; }
+    var url = URL.createObjectURL(new Blob([icsText(list)], { type: 'text/calendar;charset=utf-8' })), a = document.createElement('a');
+    a.href = url; a.download = name || 'agenda.ics'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+
   function openForm(pre) {
     pre = pre || {};
     openSheet(head('Aggiungi impegno') +
@@ -1015,17 +1109,38 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
       '<div class="f2"><label class="f">Ora inizio<input type="time" id="f-time" value="' + (pre.time || '') + '"></label>' +
       '<label class="f">Ora fine<input type="time" id="f-end" value="' + (pre.endTime || '') + '"></label></div>' +
       '<label class="f">Tipo<select id="f-kind"><option value="impegno">Impegno (cella rossa)</option><option value="promemoria">Promemoria</option><option value="scadenza">Scadenza</option></select></label>' +
+      '<div class="f2"><label class="f">Ripetizione<select id="f-rep"><option value="">Non si ripete</option><option value="m">Ogni mese (stesso giorno)</option><option value="w">Ogni settimana</option><option value="w2">Ogni 2 settimane</option></select></label>' +
+      '<label class="f" id="f-repn-wrap" hidden>Per quanti mesi<input type="number" id="f-repn" min="1" max="36" value="6"></label></div>' +
+      '<p class="note" id="f-rep-info" hidden></p>' +
       '<label class="f">Nota<input type="text" id="f-note" placeholder="Facoltativa" value="' + esc(pre.note || '') + '"></label>' +
       '<div class="actions-row"><button class="btn primary" type="submit">Salva</button><button class="btn" type="button" data-close>Annulla</button></div></form>');
     var form = $('form');
     $('f-kind').value = pre.kind || 'impegno';
     form.dataset.source = pre.source || 'Manuale';
+    var fmt = function (d) { return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear(); };
+    function repDates() {
+      var rep = $('f-rep').value, n = Math.max(1, Math.min(36, +$('f-repn').value || 1));
+      return rep && $('f-date').value ? seriesDates($('f-date').value, rep, n) : [];
+    }
+    function repInfo() {
+      var rep = $('f-rep').value, ds = repDates();
+      $('f-repn-wrap').hidden = !rep; $('f-rep-info').hidden = !rep;
+      if (!rep || !ds.length) return;
+      $('f-rep-info').textContent = 'Verranno creati ' + ds.length + ' impegni, dal ' + fmt(ds[0]) + ' al ' + fmt(ds[ds.length - 1]) + '.' + (rep === 'm' ? ' Se in un mese manca quel giorno (es. il 31) si usa l\'ultimo del mese.' : '');
+    }
+    ['f-rep', 'f-repn', 'f-date'].forEach(function (id) { $(id).addEventListener('input', repInfo); $(id).addEventListener('change', repInfo); });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var it = { id: uid++, kind: $('f-kind').value, date: $('f-date').value, time: $('f-time').value, endTime: $('f-end').value, location: $('f-loc').value.trim(),
+      var base = { kind: $('f-kind').value, time: $('f-time').value, endTime: $('f-end').value, location: $('f-loc').value.trim(),
         title: $('f-title').value.trim(), done: false, source: form.dataset.source, note: $('f-note').value.trim() };
-      if (!it.title || !it.date) return;
-      items.push(it); closeSheet(); gotoDate(it.date); renderAll(); toast('Aggiunto: ' + it.title);
+      var date = $('f-date').value;
+      if (!base.title || !date) return;
+      var ds = repDates(), made = [], sid = ds.length > 1 ? 's' + Date.now().toString(36) : '';
+      (ds.length ? ds.map(iso) : [date]).forEach(function (dd) {
+        var it = {}; Object.keys(base).forEach(function (k) { it[k] = base[k]; });
+        it.id = uid++; it.date = dd; if (sid) it.series = sid; items.push(it); made.push(it);
+      });
+      closeSheet(); gotoDate(date); renderAll(); toast(made.length > 1 ? 'Aggiunti ' + made.length + ' impegni periodici: ' + base.title : 'Aggiunto: ' + base.title);
     });
   }
 
@@ -1474,10 +1589,15 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
       (DEV ? '<label class="f">Google OAuth Client ID (per Gmail)<input type="text" id="s-client" placeholder="xxxx.apps.googleusercontent.com" value="' + esc(settings.clientId) + '"></label>' : '') +
       '<label class="chk"><input type="checkbox" id="s-auto"' + (settings.autoAdd ? ' checked' : '') + '> Aggiungi automaticamente le email trovate</label>' +
       '<label class="chk"><input type="checkbox" id="s-mine"' + (settings.onlyMine ? ' checked' : '') + '> Ignora le email che citano solo altre classi</label>' +
+      '<label class="chk"><input type="checkbox" id="s-notify"' + (settings.notify ? ' checked' : '') + '> Notifiche per impegni, promemoria e scadenze</label>' +
+      '<label class="f">Quando avvisarmi<select id="s-lead">' + [[0, 'All\'ora dell\'impegno'], [15, '15 minuti prima'], [30, '30 minuti prima'], [60, '1 ora prima'], [180, '3 ore prima'], [1440, '1 giorno prima']].map(function (o) {
+        return '<option value="' + o[0] + '"' + (+settings.leadMin === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+      '<p class="note">Gli impegni senza orario avvisano alle 8:00. Le notifiche arrivano mentre l\'app è aperta o in background (su Android con l\'app installata anche a intervalli da chiusa). Per avvisi sicuri anche ad app chiusa usa <b>Aggiungi al calendario del telefono</b> (file .ics): le notifiche le gestisce il calendario del telefono.</p>' +
+      '<div class="actions-row"><button class="btn" type="button" id="s-testnote">' + ico('bell') + 'Prova notifica</button><button class="btn" type="button" id="s-ics">' + ico('cal') + 'Esporta impegni futuri (.ics)</button></div>' +
       (DEV ? '<label class="f">URL funzione cloud (facoltativo, solo https)<input type="text" id="s-endpoint" placeholder="https://…cloudfunctions.net/extractEvent" value="' + esc(settings.endpoint) + '"></label>' +
       '<label class="f">Chiave API della funzione (facoltativa)<input type="text" id="s-key" value="' + esc(settings.apiKey) + '"></label>' +
       '<label class="chk"><input type="checkbox" id="s-e2c"' + (settings.emailToCloud ? ' checked' : '') + '> Invia anche il testo delle email alla funzione cloud (di default restano nel browser)</label>' : '') +
-      '<p class="note">Le impostazioni restano solo in questo browser.' + (DEV ? ' Modalità sviluppatore attiva (apri l\'app con #dev per uscire).' : '') + '</p>' + (DEV ? securityPanel() : '') +
+      '<p class="note">Le impostazioni restano solo in questo browser. <a href="privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="terms.html" target="_blank" rel="noopener">Termini</a>.' + (DEV ? ' Modalità sviluppatore attiva (apri l\'app con #dev per uscire).' : '') + '</p>' + (DEV ? securityPanel() : '') +
       '<div class="actions-row"><button class="btn primary" type="submit">Salva</button><button class="btn" type="button" data-close>Annulla</button>' +
       (settings.linked ? '<button class="btn" type="button" id="s-unlink">Scollega Gmail</button>' : '') +
       '<button class="btn" type="button" id="s-past">Elimina impegni Gmail passati</button>' +
@@ -1494,12 +1614,21 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
       settings.classes = sel.slice(); settings.clientId = newId; settings.scope = $('s-scope').value;
       if (changed) { seen = {}; saveSeen(); } // con nuove regole le email vanno riesaminate
       settings.autoAdd = $('s-auto').checked; settings.onlyMine = $('s-mine').checked;
+      settings.notify = $('s-notify').checked; settings.leadMin = +$('s-lead').value || 0;
       var ep = DEV ? $('s-endpoint').value.trim() : settings.endpoint;
       if (ep && !/^https:\/\//i.test(ep)) { toast('L\'URL della funzione cloud deve iniziare con https://'); return; }
       if (newId && !CLIENT_RE.test(newId)) { toast('Client ID non valido: deve finire con .apps.googleusercontent.com'); return; }
       if (DEV) { settings.endpoint = ep; settings.apiKey = $('s-key').value.trim(); settings.emailToCloud = $('s-e2c').checked; }
       saveSettings(); closeSheet(); startAuto(); toast('Impostazioni salvate');
     });
+    $('s-notify').addEventListener('change', function () {
+      var cb = this;
+      if (cb.checked) window.agendaNotify.enable().then(function (ok) { if (!ok) cb.checked = false; else window.agendaNotify.periodic(); });
+    });
+    $('s-testnote').addEventListener('click', function () {
+      window.agendaNotify.enable().then(function (ok) { if (ok) window.agendaNotify.test().then(function () { toast('Notifica inviata'); }, function () { toast('Impossibile mostrare la notifica'); }); });
+    });
+    $('s-ics').addEventListener('click', function () { var t0 = iso(todayMidnight()); downloadIcs(items.filter(function (x) { return !x.done && x.date >= t0; }), 'agenda-impegni.ics'); });
     var un = $('s-unlink');
     if (un) un.addEventListener('click', function () {
       try { if (gtoken && window.google) google.accounts.oauth2.revoke(gtoken, function () {}); } catch (e) {}
@@ -1549,6 +1678,9 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
     if (t === $('overlay') || t.closest('[data-close]')) return closeSheet();
     var b;
     if ((b = t.closest('[data-toggle]'))) { var it = items.find(function (i) { return i.id === +b.dataset.toggle; }); it.done = !it.done; closeSheet(); renderAll(); toast(it.done ? 'Segnato come completato' : 'Riaperto'); }
+    else if ((b = t.closest('[data-delseries]'))) { var s0 = items.find(function (i) { return i.id === +b.dataset.delseries; }); if (s0) { var n0 = items.length; items = items.filter(function (i) { return i.series !== s0.series; }); closeSheet(); renderAll(); toast((n0 - items.length) + ' impegni eliminati'); } }
+    else if ((b = t.closest('[data-delnext]'))) { var s1 = items.find(function (i) { return i.id === +b.dataset.delnext; }); if (s1) { var n1 = items.length; items = items.filter(function (i) { return !(i.series === s1.series && i.date >= s1.date); }); closeSheet(); renderAll(); toast((n1 - items.length) + ' impegni eliminati'); } }
+    else if ((b = t.closest('[data-ics]'))) { var s2 = items.find(function (i) { return i.id === +b.dataset.ics; }); if (s2) downloadIcs(s2.series ? items.filter(function (i) { return i.series === s2.series; }) : [s2], 'impegno.ics'); }
     else if ((b = t.closest('[data-del]'))) { var id = +b.dataset.del; items = items.filter(function (i) { return i.id !== id; }); closeSheet(); renderAll(); toast('Voce eliminata'); }
     else if ((b = t.closest('[data-open]'))) openDetail(+b.dataset.open);
     else if ((b = t.closest('[data-newday]'))) openForm({ date: b.dataset.newday });
@@ -1593,6 +1725,73 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
   }
+
+  /* Notifiche locali: partono quando l'app è aperta o in background; in più, su Android/Chrome con l'app installata, il service worker
+     controlla periodicamente gli impegni (stato copiato in IndexedDB). Per avvisi garantiti ad app chiusa: «Aggiungi al calendario del telefono». */
+  var NKEY = 'agenda-notified', notified = {};
+  try { notified = JSON.parse(localStorage.getItem(NKEY) || '{}') || {}; } catch (e) {}
+  function notifSupported() { return 'Notification' in window && 'serviceWorker' in navigator; }
+  function fireTime(i) {
+    var p = (i.time || '08:00').split(':'), d = parseIso(i.date);
+    d.setHours(+p[0], +p[1], 0, 0);
+    return d.getTime() - Math.max(0, +settings.leadMin || 0) * 60000;
+  }
+  function noteText(i) { var d = parseIso(i.date); return (i.time ? 'Ore ' + timeLabel(i) : 'Tutto il giorno') + ' · ' + d.getDate() + ' ' + MESI[d.getMonth()] + (i.location ? ' · ' + i.location : ''); }
+  function showNote(i) {
+    return navigator.serviceWorker.ready.then(function (reg) {
+      return reg.showNotification(kindLabel(i.kind) + ': ' + i.title, { body: noteText(i), tag: 'agenda-' + i.id, icon: 'icons/icon-192.png', badge: 'icons/favicon-32.png', lang: 'it', data: { id: i.id, date: i.date } });
+    });
+  }
+  function checkDue() {
+    if (!settings.notify || !notifSupported() || Notification.permission !== 'granted') return;
+    var now = Date.now(), ch = false;
+    items.forEach(function (i) {
+      if (i.done) return;
+      var f = fireTime(i), key = i.id + '@' + f;
+      if (f <= now && now - f < 3 * 3600e3 && !notified[key]) { notified[key] = now; ch = true; showNote(i).catch(function () {}); }
+    });
+    Object.keys(notified).forEach(function (k) { if (now - notified[k] > 2 * 864e5) { delete notified[k]; ch = true; } });
+    if (ch) { try { localStorage.setItem(NKEY, JSON.stringify(notified)); } catch (e) {} mirror(); }
+  }
+  var mirrorT = null;
+  function mirror() { // copia lo stato per il service worker (non può leggere localStorage)
+    clearTimeout(mirrorT);
+    mirrorT = setTimeout(function () {
+      if (!window.indexedDB) return;
+      var cut = iso(addDays(-1)), st = { on: !!settings.notify, leadMin: Math.max(0, +settings.leadMin || 0), notified: notified,
+        items: items.filter(function (i) { return !i.done && i.date >= cut; }).map(function (i) { return { id: i.id, title: i.title, kind: i.kind, date: i.date, time: i.time || '', endTime: i.endTime || '', location: i.location || '' }; }) };
+      try {
+        var r = indexedDB.open('agenda-sw', 1);
+        r.onupgradeneeded = function () { r.result.createObjectStore('kv'); };
+        r.onsuccess = function () {
+          try {
+            var db = r.result, g = db.transaction('kv').objectStore('kv').get('state');
+            g.onsuccess = function () { // unisce gli avvisi già inviati dal service worker
+              var old = g.result; if (old && old.notified) Object.keys(old.notified).forEach(function (k) { if (!st.notified[k]) { st.notified[k] = old.notified[k]; notified[k] = old.notified[k]; } });
+              try { db.transaction('kv', 'readwrite').objectStore('kv').put(st, 'state'); } catch (e) {}
+            };
+          } catch (e) {}
+        };
+      } catch (e) {}
+    }, 400);
+  }
+  window.agendaMirror = mirror;
+  function registerPeriodic() {
+    if (!notifSupported()) return;
+    navigator.serviceWorker.ready.then(function (reg) {
+      if (reg.periodicSync && settings.notify) reg.periodicSync.register('agenda-check', { minInterval: 60 * 60 * 1000 }).catch(function () {});
+    }).catch(function () {});
+  }
+  function enableNotifications(cb) { // da chiamare in risposta a un tocco dell'utente
+    if (!notifSupported()) { toast(isIOS && !standalone ? 'Su iPhone installa prima l\'app (Condividi → Aggiungi alla schermata Home)' : 'Le notifiche non sono supportate da questo browser'); return Promise.resolve(false); }
+    var ask = Notification.permission === 'granted' ? Promise.resolve('granted') : Notification.requestPermission();
+    return Promise.resolve(ask).then(function (p) { if (p !== 'granted') toast('Permesso notifiche negato: abilitalo dalle impostazioni del browser'); return p === 'granted'; });
+  }
+  window.agendaNotify = { supported: notifSupported, enable: enableNotifications, test: function () { return showNote({ id: 'test', kind: 'promemoria', title: 'Notifica di prova', date: iso(today), time: hhmmNow() }); }, periodic: registerPeriodic };
+  function hhmmNow() { var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+  setInterval(checkDue, 30000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) checkDue(); });
+  setTimeout(function () { checkDue(); mirror(); registerPeriodic(); }, 2500);
   /* ---------- fine Tema e PWA ---------- */
   renderAll();
   setTimeout(showPopup, 900);

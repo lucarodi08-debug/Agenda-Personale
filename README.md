@@ -39,6 +39,13 @@ Gli utenti normali nelle Impostazioni vedono solo classi, tipo di email e opzion
 
 Attenzione: è un'app che gira nel browser, quindi nascondere i campi evita che gli utenti li vedano o li cambino per sbaglio, ma **non è una protezione**: chi apre il codice della pagina può leggere Client ID e chiave API. Il Client ID di Google non è un segreto (è protetto dalle origini autorizzate); per la chiave API della funzione cloud limita `ALLOWED_ORIGIN` e imposta un budget/quota.
 
+## Impegni periodici, notifiche e schermo da telefono
+
+- **Impegni periodici**: in *Aggiungi impegno* scegli **Ripetizione** (ogni mese, ogni settimana, ogni 2 settimane) e **per quanti mesi**. L'app crea tutti gli impegni in un colpo solo (es. ogni 14 del mese per 6 mesi = 6 impegni; se il giorno manca, come il 31, usa l'ultimo del mese). Aprendo un impegno della serie puoi eliminare solo quello, quello e i successivi, oppure tutta la serie.
+- **Notifiche**: *Impostazioni → Notifiche* (permesso del browser, avviso all'ora, 15/30 minuti, 1/3 ore o 1 giorno prima; senza orario avvisa alle 8:00). Funzionano mentre l'app è aperta o in background e, su Android con l'app installata, anche a intervalli da chiusa (decide il sistema, di solito ogni qualche ora). **Per avvisi garantiti ad app chiusa** usa *Aggiungi al calendario del telefono* (file .ics, anche per tutta la serie): le notifiche le gestisce il calendario del telefono. Notifiche a schermo spento con l'app chiusa e puntuali al minuto richiedono un server di notifiche push (non incluso).
+- **iPhone**: le notifiche funzionano solo con l'app installata (Condividi → Aggiungi alla schermata Home) e iOS 16.4 o successivo.
+- **Telefono**: schermo fisso senza scorrimento della pagina; le azioni (Aggiungi, PDF, Gmail, Impostazioni, Tema) sono in una barra in basso.
+
 ## Circolari PDF (qualsiasi layout)
 
 1. **Carica Circolare (PDF)** → scegli il file. Il PDF deve contenere testo selezionabile (non una scansione).
