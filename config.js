@@ -5,7 +5,7 @@ window.APP_CONFIG = {
   "endpoint": "",
   "apiKey": "",
   "emailToCloud": false,
-  "pushUrl": "",
-  "vapidPublicKey": "",
+  "pushUrl": "https://agenda-push.agenda-personale.workers.dev",
+  "vapidPublicKey": "BK4X7GImmx-OkAaisy-AEoFyFTHcr_VN5cRR_2z9esNl0mtXUN5z9Qauoc3ptY7kpdktruGHzJj7ZOuyOXKE05k",
   "devHash": "962f320db133170de0087ce77414e124f884093f017a16c5b294d777728df771"
 };
