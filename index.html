@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Agenda">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
 <title>Agenda Scolastica</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -293,13 +293,20 @@ textarea { font: inherit; font-weight: 500; color: var(--ink); background: var(-
 .bg-pause .bg i { animation-play-state: paused; }
 
 @media (max-width: 640px) {
-  input, select, textarea { font-size: 16px; }   /* evita lo zoom automatico di iPhone quando tocchi un campo (causa dello scorrimento laterale) */
+  input, select, textarea, .tag-in, .f input, .f select { font-size: 16px !important; }   /* evita lo zoom automatico di iPhone quando tocchi un campo (causa dello scorrimento laterale) */
   .overlay { overscroll-behavior: contain; }
   .sheet { overflow-x: hidden; overflow-y: auto; max-width: 100%; overscroll-behavior: contain; touch-action: pan-y; }
   .sheet * { max-width: 100%; }
+  .sheet { grid-template-columns: minmax(0, 1fr); }
+  .sheet > *, .sheet form > *, .sheet .f, .sheet .f2 > * { min-width: 0; }
+  .sheet .f2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
+  .sheet input[type="date"], .sheet input[type="time"] { -webkit-appearance: none; appearance: none; min-height: 46px; text-align: left; }
+  .sheet .meta { max-width: 100%; }
+  .sheet .tags { min-width: 0; }
   .preview { display: none; }                    /* l'anteprima PDF incorporata allarga la pagina su telefono: si apre dal pulsante «Apri in una nuova scheda» */
   .sheet .actions-row { gap: 8px; }
   .sheet .btn { flex: 1 1 auto; }
+  a.btn, a.btn:visited { color: var(--ink); text-decoration: none; }
 }
 
 /* ---------- Telefono: schermo fisso, niente scorrimento della pagina ---------- */
