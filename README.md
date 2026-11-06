@@ -42,7 +42,10 @@ Attenzione: è un'app che gira nel browser, quindi nascondere i campi evita che 
 ## Impegni periodici, notifiche e schermo da telefono
 
 - **Impegni periodici**: in *Aggiungi impegno* scegli **Ripetizione** (ogni mese, ogni settimana, ogni 2 settimane) e **per quanti mesi**. L'app crea tutti gli impegni in un colpo solo (es. ogni 14 del mese per 6 mesi = 6 impegni; se il giorno manca, come il 31, usa l'ultimo del mese). Aprendo un impegno della serie puoi eliminare solo quello, quello e i successivi, oppure tutta la serie.
-- **Notifiche**: *Impostazioni → Notifiche* (permesso del browser, avviso all'ora, 15/30 minuti, 1/3 ore o 1 giorno prima; senza orario avvisa alle 8:00). Funzionano mentre l'app è aperta o in background e, su Android con l'app installata, anche a intervalli da chiusa (decide il sistema, di solito ogni qualche ora). **Per avvisi garantiti ad app chiusa** usa *Aggiungi al calendario del telefono* (file .ics, anche per tutta la serie): le notifiche le gestisce il calendario del telefono. Notifiche a schermo spento con l'app chiusa e puntuali al minuto richiedono un server di notifiche push (non incluso).
+- **Notifiche**: *Impostazioni → Notifiche* (permesso del browser, avviso all'ora, 15/30 minuti, 1/3 ore o 1 giorno prima; senza orario avvisa alle 8:00). Senza server funzionano mentre l'app è aperta o in background.
+- **Notifiche anche con l'app chiusa**: con il server in `push-server/` (gratuito su Cloudflare, guida passo passo nel suo README) l'app attiva le notifiche push: arrivano a telefono bloccato e app chiusa. Richiede di scrivere `pushUrl` e `vapidPublicKey` in `config.js`.
+- **Elimina impegni estratti**: *Impostazioni → Elimina impegni estratti*: già passati, da Gmail, da circolari PDF. Le circolari e le email propongono solo impegni da oggi in avanti.
+- **Numeri romani**: il lettore PDF e le email riconoscono anche classi scritte con numeri romani (Vj, IIIB, IVC-D) e le trasformano in 5J, 3B, 4C/4D.
 - **iPhone**: le notifiche funzionano solo con l'app installata (Condividi → Aggiungi alla schermata Home) e iOS 16.4 o successivo.
 - **Telefono**: schermo fisso senza scorrimento della pagina; le azioni (Aggiungi, PDF, Gmail, Impostazioni, Tema) sono in una barra in basso.
 

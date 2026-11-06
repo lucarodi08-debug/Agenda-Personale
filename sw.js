@@ -1,5 +1,5 @@
 /* Service worker: l'app funziona anche senza rete. La versione cambia a ogni build, così gli aggiornamenti arrivano da soli. */
-const VERSION = '4da5c79e8c';
+const VERSION = '429c4564d7';
 const CACHE = 'agenda-' + VERSION;
 const SHELL = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'privacy.html', 'terms.html', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
@@ -59,5 +59,14 @@ self.addEventListener('notificationclick', function (e) {
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) {
     for (const c of cs) { if ('focus' in c) return c.focus(); }
     return self.clients.openWindow('./');
+  }));
+});
+
+/* Notifiche push dal server (arrivano anche ad app chiusa) */
+self.addEventListener('push', function (e) {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data ? e.data.text() : '' }; }
+  e.waitUntil(self.registration.showNotification(d.title || 'Agenda Scolastica', {
+    body: d.body || '', tag: d.tag || 'agenda', icon: 'icons/icon-192.png', badge: 'icons/favicon-32.png', lang: 'it', data: d.data || {}
   }));
 });

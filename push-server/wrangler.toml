@@ -1,0 +1,19 @@
+name = "agenda-push"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# ogni minuto controlla i promemoria in scadenza e li spedisce
+[triggers]
+crons = ["* * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "agenda-push"
+database_id = "INCOLLA-QUI-L-ID-CHE-DA-wrangler-d1-create"
+
+[vars]
+# indirizzo del tuo sito (solo dominio, senza / finale). Più indirizzi: separati da virgola
+ALLOWED_ORIGIN = "https://TUONOME.github.io"
+VAPID_SUBJECT = "mailto:TUA-EMAIL@esempio.it"
+VAPID_PUBLIC_KEY = "INCOLLA-QUI-LA-CHIAVE-PUBBLICA"
+# la chiave PRIVATA NON va qui: usa  npx wrangler secret put VAPID_PRIVATE_KEY
