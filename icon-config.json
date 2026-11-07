@@ -1,15 +1,13 @@
 {
   "_come_si_usa": "Modifica i valori qui sotto (colori in formato #rrggbb), poi esegui:  python3 tools/make_icons.py   (serve: pip install pillow). Rigenera icons/*.png, icons/icon.svg e manifest.webmanifest.",
-
   "app": {
-    "name": "Agenda Scolastica",
-    "short_name": "Agenda",
-    "description": "Calendario scolastico con impegni da circolari PDF ed email.",
+    "name": "Agendoro",
+    "short_name": "Agendoro",
+    "description": "Agenda scolastica con impegni da circolari PDF, screenshot ed email.",
     "lang": "it",
     "theme_color": "#1f7a4d",
     "background_color": "#e6edf0"
   },
-
   "icon": {
     "backgroundFrom": "#1f7a4d",
     "backgroundTo": "#2fbf8a",
@@ -19,6 +17,8 @@
     "symbolColor": "#1f7a4d",
     "symbol": "check",
     "_symbol_valori": "check = spunta, dots = puntini del calendario, none = nessun simbolo",
-    "cornerRadius": 112
+    "cornerRadius": 112,
+    "image": "icons/source.png",
+    "_image": "Se «image» è impostato, le icone vengono ricavate da quell'immagine (PNG quadrata con angoli trasparenti). Per tornare all'icona disegnata, cancella la riga «image»."
   }
 }

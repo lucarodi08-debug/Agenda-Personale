@@ -1,7 +1,7 @@
 {
-  "name": "Agenda Scolastica",
-  "short_name": "Agenda",
-  "description": "Calendario scolastico con impegni da circolari PDF ed email.",
+  "name": "Agendoro",
+  "short_name": "Agendoro",
+  "description": "Agenda scolastica con impegni da circolari PDF, screenshot ed email.",
   "lang": "it",
   "start_url": "./",
   "scope": "./",

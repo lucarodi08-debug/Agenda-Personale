@@ -1,4 +1,4 @@
-# Agenda Scolastica – web app
+# Agendoro – web app
 
 - `index.html` – l'app (un solo file). Va ospitata su un indirizzo **https** (GitHub Pages, Netlify, Firebase Hosting…): Google OAuth non funziona aprendo il file con `file://`. I dati restano nel browser (localStorage).
 - `_headers` – intestazioni di sicurezza HTTP (Netlify / Cloudflare Pages): CSP con `frame-ancestors`, `Cross-Origin-Opener-Policy: same-origin-allow-popups` (richiesta dal login Google), HSTS. Su GitHub Pages non si possono impostare le intestazioni: resta valida la CSP già inclusa in `index.html`.
@@ -85,7 +85,7 @@ Nelle Impostazioni e in Sync Gmail c'è un pannello **Sicurezza OAuth 2.0 di Goo
 
 ## Collegare il tuo Gmail personale (Google OAuth)
 
-1. Vai su [console.cloud.google.com](https://console.cloud.google.com) e crea un progetto (es. "Agenda Scolastica").
+1. Vai su [console.cloud.google.com](https://console.cloud.google.com) e crea un progetto (es. "Agendoro").
 2. **API e servizi → Libreria** → cerca **Gmail API** → Abilita.
 3. **Schermata di consenso OAuth** (o "Google Auth Platform"): tipo **Esterno**, nome app a piacere, la tua email come contatto. In **Utenti di test** aggiungi il tuo indirizzo Gmail personale.
 4. **Credenziali → Crea credenziali → ID client OAuth** → tipo **Applicazione web**. In **Origini JavaScript autorizzate** inserisci l'indirizzo dove ospiti l'app, senza barra finale (es. `https://tuonome.github.io`). Per provare in locale aggiungi anche `http://localhost:8000` e apri l'app con `python3 -m http.server 8000`.

@@ -66,9 +66,46 @@ def png(scale, full, size):
         img.putalpha(m)
     return img.resize((size, size), Image.LANCZOS)
 
-open(os.path.join(OUT, 'icon.svg'), 'w', encoding='utf-8').write(svg(1, False))
-for size, name, scale, full in [(192, 'icon-192.png', 1, False), (512, 'icon-512.png', 1, False), (512, 'icon-maskable-512.png', .72, True), (180, 'apple-touch-icon.png', .78, True), (32, 'favicon-32.png', 1, False)]:
-    png(scale, full, size).save(os.path.join(OUT, name))
+
+# --- Icona da immagine: se icon-config.json contiene  "icon": { "image": "icons/source.png" }  si usa quell'immagine al posto del disegno ---
+def from_image(path):
+    src = Image.open(os.path.join(ROOT, path)).convert('RGBA')
+    W = src.width; cut = int(W * 0.06)                              # toglie il bordo e gli angoli arrotondati: resta un quadrato pieno
+    core = src.crop((cut, cut, W - cut, W - cut))
+    top = src.getpixel((W // 2, cut + 2))[:3]; bot = src.getpixel((W // 2, W - cut - 3))[:3]
+    def rounded(size):                                              # icona normale: angoli arrotondati trasparenti
+        return src.resize((size, size), Image.LANCZOS)
+    def flat(size, scale):                                          # quadrato pieno (iOS e Android applicano la loro forma)
+        base = Image.new('RGBA', (size, size))
+        px = base.load()
+        for y in range(size):
+            k = y / max(size - 1, 1); col = tuple(int(top[i] + (bot[i] - top[i]) * k) for i in range(3)) + (255,)
+            for x in range(size): px[x, y] = col
+        inner = int(size * scale); im = core.resize((inner, inner), Image.LANCZOS)
+        if scale < 1:                                               # sfuma i bordi dell'immagine nello sfondo (niente linea visibile)
+            f = max(4, inner // 14); m = Image.new('L', (inner, inner), 255); md = m.load()
+            for yy in range(inner):
+                for xx in range(inner):
+                    e = min(xx, yy, inner - 1 - xx, inner - 1 - yy)
+                    if e < f: md[xx, yy] = int(255 * e / f)
+            im.putalpha(m)
+        base.alpha_composite(im, ((size - inner) // 2, (size - inner) // 2))
+        return base
+    return rounded, flat
+if ic.get('image') and os.path.exists(os.path.join(ROOT, ic['image'])):
+    rounded, flat = from_image(ic['image'])
+    for size, name, kind in [(192, 'icon-192.png', 'r'), (512, 'icon-512.png', 'r'), (512, 'icon-maskable-512.png', 'm'), (180, 'apple-touch-icon.png', 'a'), (32, 'favicon-32.png', 'r')]:
+        (rounded(size) if kind == 'r' else flat(size, .76 if kind == 'm' else 1)).save(os.path.join(OUT, name))
+    import base64, io
+    b = io.BytesIO(); rounded(256).save(b, 'PNG')
+    open(os.path.join(OUT, 'icon.svg'), 'w', encoding='utf-8').write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256"><image href="data:image/png;base64,%s" width="256" height="256"/></svg>' % base64.b64encode(b.getvalue()).decode())
+    ICON_FROM_IMAGE = True
+else:
+    ICON_FROM_IMAGE = False
+if not ICON_FROM_IMAGE:
+    open(os.path.join(OUT, 'icon.svg'), 'w', encoding='utf-8').write(svg(1, False))
+    for size, name, scale, full in [(192, 'icon-192.png', 1, False), (512, 'icon-512.png', 1, False), (512, 'icon-maskable-512.png', .72, True), (180, 'apple-touch-icon.png', .78, True), (32, 'favicon-32.png', 1, False)]:
+        png(scale, full, size).save(os.path.join(OUT, name))
 
 manifest = {
     'name': app['name'], 'short_name': app['short_name'], 'description': app.get('description', ''), 'lang': app.get('lang', 'it'),
