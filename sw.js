@@ -1,5 +1,5 @@
 /* Service worker: l'app funziona anche senza rete. La versione cambia a ogni build, così gli aggiornamenti arrivano da soli. */
-const VERSION = 'b07456a1a3';
+const VERSION = '1aa1474ac8';
 const CACHE = 'agenda-' + VERSION;
 const SHELL = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'privacy.html', 'terms.html', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 

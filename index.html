@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval' 'sha256-MisV9D3pv2PN2zjMSzOvKfChTqF1aL9iH56DAsvCWvs=' 'sha256-W0ibVvYIoAbaGeXy30bg/QmcjLpOid82qIQp81dswDk=' https://accounts.google.com/gsi/client https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://accounts.google.com/gsi/style https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://gmail.googleapis.com https://accounts.google.com/gsi/ https://cdnjs.cloudflare.com https://*.cloudfunctions.net https://*.run.app https://*.workers.dev https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; frame-src blob: https://accounts.google.com/gsi/; object-src blob:; worker-src 'self' blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval' 'sha256-ReqZqBbNydOTJUsSzjaZwfTXqU70+x4T2uMzpyNnHZA=' 'sha256-W0ibVvYIoAbaGeXy30bg/QmcjLpOid82qIQp81dswDk=' https://accounts.google.com/gsi/client https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://accounts.google.com/gsi/style https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://gmail.googleapis.com https://accounts.google.com/gsi/ https://cdnjs.cloudflare.com https://*.cloudfunctions.net https://*.run.app https://*.workers.dev https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; frame-src blob: https://accounts.google.com/gsi/; object-src blob:; worker-src 'self' blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#e6edf0">
@@ -477,8 +477,23 @@ input[type="number"] { font: inherit; font-weight: 500; color: var(--ink); backg
     if (m[3]) out.push(n + m[3].toUpperCase());
     return { cls: out, amb: /^(II|VI|IVA)$/.test(m[0].replace(/[-–].*$/, '').toUpperCase()) };
   }
+  // «V E, V G, V I e V J», «classe 5 J»: numero (romano o arabo) + lettera separati da uno spazio. Si unisce solo con un indizio:
+  // la parola «classe/i», almeno due sigle nella stessa riga, oppure la sigla da sola (cella).
+  var SPC = /(^|[^\p{L}\d])(III|II|IV|V|I|[1-5])[ \t\u00a0]+([A-Z])(?=$|[^\p{L}\d])/gu;
+  function joinSpaced(text) {
+    var s = String(text), re = new RegExp(SPC.source, 'gu'), m, n = 0, listy = false, prevEnd = -1;
+    while ((m = re.exec(s))) {
+      n++; var st = m.index + m[1].length;
+      if (prevEnd >= 0 && /^[\s,;]*(?:e|ed|o|oppure|-|–|\/)?[\s,;]*$/i.test(s.slice(prevEnd, st))) listy = true;   // «V E, V G e V J»: elenco di sigle
+      prevEnd = m.index + m[0].length;
+    }
+    if (!n) return s;
+    var ctx = listy || /\bclass[ei]\b/i.test(s) || /^\s*(?:III|II|IV|V|I|[1-5])[ \t\u00a0]+[A-Z]\s*$/.test(s);
+    if (!ctx) return s;
+    return s.replace(SPC, function (m, pre, num, let) { return !romanOn && /^[IV]+$/.test(num) ? m : pre + num + let; });
+  }
   function lineClasses(text) {
-    var t = String(text).replace(/([1-5][A-Z])\s*[-–]\s*(?=[1-5]?[A-Z](?![\p{L}\d]))/gu, '$1-');
+    var t = joinSpaced(text).replace(/([1-5][A-Z])\s*[-–]\s*(?=[1-5]?[A-Z](?![\p{L}\d]))/gu, '$1-');
     var out = [];
     t.split(/[\s,;()\/]+/).forEach(function (tok) {
       tok = tok.replace(/^[^\p{L}\d]+|[^\p{L}\d]+$/gu, '');
@@ -527,7 +542,7 @@ input[type="number"] { font: inherit; font-weight: 500; color: var(--ink); backg
 
   var EDGE = /^(?:il|lo|la|le|gli|i|un|uno|una|di|del|della|dei|delle|con|per|su|in|a|da|e|ed|ore|ora|orario|alle|dalle|dal|al|classe|classi|data|presso|si|terra|terr\u00e0)$/i;
   function cleanCell(s) {
-    var t = String(s), low = norm(t);
+    var t = joinSpaced(s), low = norm(t);
     if (low.length === t.length) {
       var b = t.split('');
       scanDates(low).forEach(function (d) { for (var k = d.i; k < d.e; k++) b[k] = ' '; });
@@ -613,6 +628,7 @@ input[type="number"] { font: inherit; font-weight: 500; color: var(--ink); backg
     var isMeta = function (L) {
       if (!L.dates.length || L.cls.length) return false;
       if (/\b(prot|protocollo|circolare|pagina|pag\.|stampat|pubblicat|firma|dirigente|scadenza)\b/.test(L.low)) return true;
+      if (/\d{1,2}[.\/]\d{1,2}[.\/]\d{4}\s+\d{1,2}:\d{2}(?::\d{2})?/.test(L.low)) return true;   // «03.11.2026 07:54:11 CET» (firma digitale)
       var pl = L.low.match(/^\s*([a-z' ]{2,30}),\s*(?:li\s+|il\s+)?(?:\d|[a-z]+\s+\d)/); // «Rimini, 28/04/2025»
       return !!pl && L.idx < firstCls && L.idx < 15 && DAYS.indexOf(pl[1].trim()) < 0 && L.dates[0].i < 40;
     };
@@ -661,7 +677,57 @@ input[type="number"] { font: inherit; font-weight: 500; color: var(--ink); backg
     var docText = lines.map(function (L) { return L.text; }).join('\n');
 
     var rows = [], undated = 0;
-    clsLines.forEach(function (L) {
+
+    /* ---- Testo semplice (senza tabelle): le classi stanno nei destinatari o nell'oggetto, data e orario in una frase del corpo ----
+       Vale quando nessuna riga con classi contiene una data e nessuna data cade dentro un blocco di classi (cella unita). */
+    var sentenceMode = !clsLines.some(function (L) { return L.dates.length; }) &&
+      !lines.some(function (z) { return z.dates.length && !z.cls.length && clsLines.some(function (c) { return c.y < z.y && z.y - c.y <= 45; }) && clsLines.some(function (c) { return c.y > z.y && c.y - z.y <= 45; }); }) &&   // data in una cella unita, tra righe di classi
+      lines.some(function (z) { return z.dates.length && !z.cls.length && !z.meta; });
+    if (sentenceMode) {
+      var lineH = median(lines.slice(1).map(function (L, i) { return L.y - lines[i].y; }).filter(function (d) { return d > 0 && d < 60; }), 14);
+      var sigAt = lines.findIndex(function (L) { return /\b(il\s+dirigente|firma\s+autografa|cordiali\s+saluti|distinti\s+saluti)\b/.test(L.low); });
+      // oggetto: la riga «OGGETTO:» e le righe che la continuano
+      var subject = '';
+      var oi = lines.findIndex(function (L) { return /^\s*o\s?ggetto\s*:?/.test(L.low); });
+      if (oi >= 0) {
+        var parts = [lines[oi].text.replace(/^\s*o\s?ggetto\s*:?\s*/i, '')];
+        var maxLen = Math.max.apply(null, lines.map(function (L) { return L.text.length; }));
+        for (var q = oi + 1; q < lines.length && q <= oi + 3 && lines[q].y - lines[q - 1].y <= lineH * 1.6 && lines[q - 1].text.length >= maxLen * 0.75; q++) { if (/^\s*$/.test(lines[q].text)) break; parts.push(lines[q].text); }   // continua solo se la riga precedente è «piena»
+        subject = joinSpaced(parts.join(' ')).replace(/\s+/g, ' ');
+        subject = subject.replace(/\s*[-–—,:]?\s*\bclass[ei]\b(?:\s+(?:[1-5]|III|II|IV|V|I)[A-Za-z](?:[-–][A-Za-z])?(?:\s*(?:,|e|ed)\s*|\s+)?)+\s*$/i, '');   // «… classi VE, VG e VJ» in coda
+        var dash = subject.match(/\s[-–—]\s+(.{12,})$/); if (dash) subject = dash[1];
+        subject = subject.replace(/(["“«])([^"”»:]{3,40}):[^"”»]*(["”»])/, '$1$2$3');   // «Green Jobs: professioni e competenze…» -> «Green Jobs»
+        subject = subject.replace(/^["“”«»'\s]+|["“”«»'\s]+$/g, '').replace(/\s+(?:["“”«»])\s*$/, '');
+        if ((subject.match(/["“”«»]/g) || []).length % 2) subject += /“/.test(subject) ? '”' : /«/.test(subject) ? '»' : '"';   // chiude le virgolette rimaste aperte
+        if (subject.length > 70) subject = subject.slice(0, 70).replace(/\s+\S*$/, '') + '…';
+        subject = subject.charAt(0).toUpperCase() + subject.slice(1);
+      }
+      var REF = /(?:\bn\.?\s*\d+|\bprot\.?\s*\S*|\blegge|\bdecreto|\bd\.?\s?lgs\.?|\bo\.?\s?m\.?|\bnota|\bcircolare|\bart\.?\s*\d+)[^.;]{0,40}\b(?:del|dell'|della)\s*$/;
+      var CUE = /\b(giorno|data|si\s+terr[a]|avra\s+luogo|si\s+svolger|svolgera|convocat|incontro|assemblea|riunione|entro|dalle|alle|partecipar|programmat|previst|fissat|appuntamento|inizier|iniziera|termin|consegna|scadenz)/;
+      lines.forEach(function (L, li) {
+        if (L.cls.length || L.meta || !L.dates.length) return;
+        if (sigAt >= 0 && li >= sigAt) return;                          // dopo la firma: niente impegni
+        var nxt = lines[li + 1] && !lines[li + 1].cls.length && lines[li + 1].y - L.y <= lineH * 1.8 ? lines[li + 1] : null;
+        var ctxLow = L.low + (nxt ? ' ' + nxt.low : '');
+        L.dates.forEach(function (dm) {
+          if (REF.test(L.low.slice(0, dm.i))) return;                   // «ai sensi dell'art. 10 dell'o.m. 67 del 31 marzo 2025»
+          var wd = DAYS.some(function (d) { return new RegExp('\\b' + d + '\\b').test(L.low.slice(Math.max(0, dm.i - 14), dm.i)); });
+          if (!(wd || L.time || CUE.test(ctxLow))) return;
+          var dt = resolve(dm); if (!dt) return;
+          var tm = L.dates.length === 1 ? (L.time || null) : null;
+          if (L.dates.length === 1 && (!tm || !tm.end) && nxt) {         // «… dalle ore 8.15» / «alle ore 10.45» sulla riga dopo
+            var t2 = lineTime(L.blank + ' ' + nxt.blank);
+            if (t2 && (!tm || t2.end)) tm = t2;
+          }
+          var kk = KEYS.filter(function (z) { return z[0].test(L.text + ' ' + (nxt ? nxt.text : '')); })[0];
+          var d1 = kk ? fullType(kk, L.text + ' ' + (nxt ? nxt.text : ''), '') : (subject || '');
+          if (!d1) { var kd = KEYS.filter(function (z) { return z[0].test(docText); })[0]; d1 = kd ? kd[1] : 'Impegno scolastico'; }
+          rows.push({ cls: classesFound, dt: dt, tm: tm || { start: '', end: '' }, desc: d1 });
+        });
+      });
+      if (!rows.length) undated = 1;
+    }
+    (sentenceMode ? [] : clsLines).forEach(function (L) {
       var b = L.block, src = null, dm = null;
       // DATA: nella riga > cella unita dentro il blocco > ultima data sopra > prima data sotto
       if (L.dates.length && usable(L)) { src = L; dm = L.dates[0]; }
@@ -750,7 +816,7 @@ input[type="number"] { font: inherit; font-weight: 500; color: var(--ink); backg
   var norm = function (s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[°º]/g, ' '); };
 
   function findClasses(text) {
-    text = String(text);
+    text = joinSpaced(text);
     var out = [], re = /\b([1-5])\s?[°ª^]?\s?([A-Z])\b|\b([1-5])([a-z])\b/g, m;
     while ((m = re.exec(text))) {
       var c = (m[1] || m[3]) + (m[2] || m[4]).toUpperCase();
